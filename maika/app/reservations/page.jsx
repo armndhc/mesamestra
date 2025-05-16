@@ -188,32 +188,27 @@ const handleBlur = (e, label) => {
 
   return (
     <Container maxWidth="xl" disableGutters>
-      <Grid item xs={12}>
-              <Typography variant="h4" sx={{ ml: 6, display: 'flex', alignItems: 'center', fontWeight: 'bold' }}>
-                <EventIcon sx={{ mr: 1 }} />
-                  Reservacuiones
-              </Typography>
-            </Grid>
-
-
-      <Typography
+        <Typography
         variant="h3"
         align="center"
         gutterBottom
         sx={{
           fontWeight: "bold",
-          borderBottom: "4px solid black",
-          color: theme.palette.primary.main,
-          p: 4,
+          borderBottom: "4px solid #2c2f48",
+          color: '#2c2f48',
+          p: 6,
         }}
       >
+        <EventIcon sx={{ mr: 1,fontSize: 40 }} />
         Reservations
       </Typography>
-      <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 5, mb: 5 }}>
         <Button
           startIcon={<AddIcon />}
           variant="contained"
-          sx={{ borderRadius: 3 }}
+          size="large"
+          
+          sx={{ borderRadius: 7, p:3, fontWeight: 'bold', fontSize: '1.2rem', color: 'white', backgroundColor: '#5188a7' }}
           onClick={() => handleReservation({ action: "add" })}
         >
           Add Reservation
@@ -221,15 +216,18 @@ const handleBlur = (e, label) => {
       </Box>
 
       <Paper
+        elevation={5}
         sx={{
           padding: 2,
-          borderRadius: 2,
+          borderRadius: 5,
           maxWidth: "80%",
           margin: "0 auto",
           height: "400px",
+          
         }}
       >
         <DataGrid
+ 
           columns={columns}
           rows={rows}
           getRowId={(row) => row._id}
@@ -240,9 +238,12 @@ const handleBlur = (e, label) => {
           }}
           pageSizeOptions={[5, 10]}
           sx={{
+            
             border: "1px solid #DDD",
             backgroundColor: "#F9F9F9",
             "& .MuiDataGrid-columnHeaderTitle": {
+              backgroundColor: "#F9F9F9",
+              color: "#2c2f48",   // Color del texto de todos los encabezados
               fontWeight: "bold",
             },
             "& .MuiDataGrid-columnHeaders": {
@@ -256,6 +257,7 @@ const handleBlur = (e, label) => {
             },
             "& .MuiDataGrid-footerContainer": {
               backgroundColor: "#F1F1F1",
+
             },
           }}
         />

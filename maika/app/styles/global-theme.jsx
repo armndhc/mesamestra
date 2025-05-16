@@ -15,7 +15,7 @@ export const theme = createTheme({
       date: "#f1f1f1",
     },
     text: {
-      primary: "#000000",
+      primary: "#2c2f48",
       secondary: "#AEAEAE",
     },
   },

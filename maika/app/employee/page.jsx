@@ -18,6 +18,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
+import PeopleIcon from '@mui/icons-material/People';
 import { useState, useEffect } from "react";
 import EmpDialog from "../components/emp-dialog";
 import Alerts from "../components/alerts";
@@ -201,9 +202,20 @@ export default function EmployeeTable() {
   ];
 
   return (
-    <Container maxWidth="lg" disableGutters>
-      <Typography variant="h3" textAlign="center" sx={{ mt: 1, mb: 3 }}>
-        Employee Management
+    <Container maxWidth="xl" disableGutters>
+      <Typography
+        variant="h3"
+        align="center"
+        gutterBottom
+        sx={{
+          fontWeight: "bold",
+          borderBottom: "4px solid #2c2f48",
+          color: '#2c2f48',
+          p: 6,
+        }}
+      >
+        <PeopleIcon sx={{ mr: 1,fontSize: 40 }} />
+        Empleados
       </Typography>
 
       <Tabs value={tabIndex} onChange={handleTabChange} centered>
@@ -213,15 +225,21 @@ export default function EmployeeTable() {
 
       {tabIndex === 0 && (
         <Paper sx={{ padding: 2, borderRadius: 2, mt: 3 }}>
-          <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 2, mb: 5 }}>
             <Button
               startIcon={<AddIcon />}
               variant="contained"
+              size="large"
+                    
+              sx={{ borderRadius: 5, p:2, fontWeight: 'bold', fontSize: '1.2rem', color: 'white', backgroundColor: '#5188a7' }}
               onClick={() => handleEmp({ action: "add" })}
             >
               Add Employee
             </Button>
           </Box>
+          
+          
+        
           <DataGrid
             rows={rows}
             columns={columns}

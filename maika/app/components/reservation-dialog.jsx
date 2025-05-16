@@ -267,7 +267,7 @@ import {
 
           {/*Choose date and time*/}
           <Container>
-            <Typography variant="h4" color={theme.palette.primary.main} gutterBottom>
+            <Typography variant="h4" color="#5188a7" gutterBottom>
               Date & Time
             </Typography>
             <Typography variant="body1" color={theme.palette.text.secondary} mb={4}>
@@ -332,7 +332,7 @@ import {
   
           {/*Personalize the experience*/}
           <Container sx={{ mt: 4 }}>
-            <Typography variant="h4" color={theme.palette.primary.main} gutterBottom>
+            <Typography variant="h4" color="#5188a7" gutterBottom>
               Customize your reservation
             </Typography>
             <Typography variant="body1" color={theme.palette.text.secondary} mb={4}>
@@ -399,7 +399,7 @@ import {
           {/*Contact information*/}
           <Container sx= {{mt:4}}>
 
-          <Typography variant="h4" color={theme.palette.primary.main} gutterBottom>
+          <Typography variant="h4" color="#5188a7" gutterBottom>
               Contact Information
             </Typography>
             <Typography variant="body1" color={theme.palette.text.secondary} mb={4}>
@@ -541,10 +541,14 @@ import {
 
         {/*Exit buttons*/}
         <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">
+          <Button  onClick={handleCloseDialog} sx={{fontSize: '1.0rem'}} color="#8bbfda">
             Cancel
           </Button>
-          <Button onClick={saveReservation} color="primary" variant="contained" >
+          <Button  
+                    variant="contained"
+                    size="large"
+                    
+                    sx={{ borderRadius: 7, p:1, fontWeight: 'bold', fontSize: '1.2rem', color: 'white', backgroundColor: '#5188a7' }} onClick={saveReservation}  >
             {action === "add" ? "Add" : "Edit"}
           </Button>
         </DialogActions>

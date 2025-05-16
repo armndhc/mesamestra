@@ -287,45 +287,31 @@ export default function Inventory() {
     // Component.
     return (
         <Container maxWidth="xl" disableGutters>
-            <Grid item xs={12}>
-                <Typography variant="h4" sx={{ ml: 6, display: 'flex', alignItems: 'center', fontWeight: 'bold' }}>
-                    <InventoryIcon sx={{ mr: 1 }} />
-                        Inventario
-                </Typography>
-            </Grid>
+            <Typography
+        variant="h3"
+        align="center"
+        gutterBottom
+        sx={{
+          fontWeight: "bold",
+          borderBottom: "4px solid #2c2f48",
+          color: '#2c2f48',
+          p: 4,
+        }}
+      >
+        <InventoryIcon sx={{ mr: 1,fontSize: 40 }} />
+        Inventario
+      </Typography>
             {/* Add inventory button. */}
             
-            <Grid container spacing={2} justifyContent="center">
-              {/* Columna izquierda: Hora actual y calendario */}
-              <Grid item xs={12} md={6}>
-               
-                  <Grid item>
-                    <Paper
-                      elevation={2}
-                      sx={{
-                        p: 2,
-                        borderRadius: 3,
-                        textAlign: "center",
-                      }}
-                    >
-                      <Typography variant="h4" fontWeight="bold" gutterBottom>
-                        Hora actual
-                      </Typography>
-                      <Typography variant="h3" color="primary">
-                        hola
-                      </Typography>
-                    </Paper>
-                  
-                  </Grid>
+          
 
-</Grid>
-
-            </Grid>
-            <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+           
+            <Box sx={{ display: "flex", justifyContent: "center",   mt: 5, mb: 5 }}>
                 <Button
                     startIcon={<AddIcon />}
                     variant="contained"
-                    sx={{ borderRadius: 3 }}
+                    size="large"
+                    sx={{ borderRadius: 7, p:3, fontWeight: 'bold', fontSize: '1.2rem', color: 'white', backgroundColor: '#5188a7' }}
                     onClick={() => handleInventory({ action: "add" })}
                 >
                     Add Item

@@ -7,10 +7,25 @@ import {
   TextField,
   Button,
   Box,
-  Typography
+  Typography,
+  Container,
+  useTheme,
+  InputAdornment,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
+import Inventory2Icon from '@mui/icons-material/Inventory2';
+import ProductionQuantityLimitsIcon from '@mui/icons-material/ProductionQuantityLimits';
 import Image from "next/image";
 import { useState, useEffect } from "react";
+
+import { 
+  Badge, 
+  Category, 
+  Inventory, 
+  Image as ImageIcon 
+} from '@mui/icons-material';
+
+
 import { INVENTORIES_API } from "../constants/inventory/constants";
 import axios from "axios";
 
@@ -29,6 +44,9 @@ export default function InventoryDialog({
   // States.
   const [selectedImage, setSelectedImage] = useState(null);
   const [errors, setErrors] = useState({});
+
+  {/*Theme*/}
+  const theme = useTheme();
 
   // Handle functions.
 
@@ -161,66 +179,110 @@ export default function InventoryDialog({
   return (
     <Dialog open={open} onClose={handleCloseDialog}>
       <DialogTitle>{action === "add" ? "Add" : "Edit"} Inventory</DialogTitle>
+      
       <DialogContent>
-        {/* Name field. */}
-        <TextField
-          margin="dense"
-          name="name"
-          label="Name"
-          fullWidth
-          value={inventory.name}
-          onChange={handleChange}
-          error={!!errors.name}
-          helperText={errors.name}
-        />
-        {/* Unit field. */}
-        <TextField
-          margin="dense"
-          name="unit"
-          label="Unit"
-          fullWidth
-          value={inventory.unit}
-          onChange={handleChange}
-          error={!!errors.unit}
-          helperText={errors.unit}
-        />
-        {/* Existence field. */}
-        <TextField
-          margin="dense"
-          name="existence"
-          label="Existence"
-          type="number"
-          fullWidth
-          value={inventory.existence}
-          onChange={handleChange}
-          error={!!errors.existence}
-          helperText={errors.existence}
-          inputProps={{ min: 0 }}
-        />
-        {/* Image field. */}
-        <TextField
-          type="file"
-          name="image"
-          accept="image/*"
-          onChange={handleImageChange}
-          error={!!errors.image}
-          helperText={errors.image}
-          sx={{ mb: 2 }}
-        />
-        {/* Image preview. */}
-        {selectedImage && (
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="body1">Image Preview:</Typography>
-            <Image
-              src={selectedImage}
-              alt="Selected Image"
-              width={200}
-              height={200}
-              style={{ objectFit: "cover" }}
-            />
-          </Box>
-        )}
-      </DialogContent>
+  <Container>
+    <Typography variant="h4" color="#5188a7" gutterBottom>
+      Product details
+    </Typography> 
+  </Container>
+  
+  {/* Name field with internal icon */}
+  <TextField
+    margin="dense"
+    name="name"
+    label="Name"
+    fullWidth
+    value={inventory.name}
+    onChange={handleChange}
+    error={!!errors.name}
+    helperText={errors.name}
+    InputProps={{
+      startAdornment: (
+        <InputAdornment position="start">
+          <Inventory2Icon />
+        </InputAdornment>
+      ),
+    }}
+    sx={{ mb: 2 }}
+  />
+  
+  {/* Unit field with internal icon */}
+  <TextField
+    margin="dense"
+    name="unit"
+    label="Unit"
+    fullWidth
+    value={inventory.unit}
+    onChange={handleChange}
+    error={!!errors.unit}
+    helperText={errors.unit}
+    InputProps={{
+      startAdornment: (
+        <InputAdornment position="start">
+          <Category />
+        </InputAdornment>
+      ),
+    }}
+    sx={{ mb: 2 }}
+  />
+  
+  {/* Existence field with internal icon */}
+  <TextField
+    margin="dense"
+    name="existence"
+    label="Existence"
+    type="number"
+    fullWidth
+    value={inventory.existence}
+    onChange={handleChange}
+    error={!!errors.existence}
+    helperText={errors.existence}
+    inputProps={{ min: 0 }}
+    InputProps={{
+      startAdornment: (
+        <InputAdornment position="start">
+          <Inventory />
+        </InputAdornment>
+      ),
+    }}
+    sx={{ mb: 2 }}
+  />
+  
+  {/* Image field with internal icon */}
+  <TextField
+    type="file"
+    name="image"
+    label="Image"
+    accept="image/*"
+    onChange={handleImageChange}
+    error={!!errors.image}
+    helperText={errors.image}
+    fullWidth
+    InputProps={{
+      startAdornment: (
+        <InputAdornment position="start">
+          <ImageIcon />
+        </InputAdornment>
+      ),
+    }}
+    sx={{ mb: 2 }}
+  />
+  
+  {/* Image preview */}
+  {selectedImage && (
+    <Box sx={{ mb: 2 }}>
+      <Typography variant="body1">Image Preview:</Typography>
+      <Image
+        src={selectedImage}
+        alt="Selected Image"
+        width={200}
+        height={200}
+        style={{ objectFit: "cover" }}
+      />
+    </Box>
+  )}
+</DialogContent>
       {/* Action buttons. */}
       <DialogActions>
         <Button color="secondary" onClick={handleCloseDialog}>
