@@ -1,0 +1,12 @@
+services:
+  web:
+    container_name: maika
+    image: maika:v1.0.1
+    restart: always
+    ports:
+      - "3000:3000"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: 1.0
