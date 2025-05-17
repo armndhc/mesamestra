@@ -15,7 +15,8 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2"; // Use the correct Grid import
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import PersonIcon from '@mui/icons-material/Person';
+import TableRestaurantIcon from '@mui/icons-material/TableRestaurant';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 import {Table, TableBody, TableCell, TableContainer,TableHead, TableRow, Checkbox} from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -223,7 +224,7 @@ const handleFreezeToggle = () => {
       <Grid item xs={12}>
         <Typography variant="h4" sx={{ ml: 6, display: 'flex', alignItems: 'center', fontWeight: 'bold' }}>
           <ShoppingCartIcon sx={{ mr: 1 }} />
-            Órdenes
+            Orders
         </Typography>
       </Grid>
     
@@ -235,8 +236,9 @@ const handleFreezeToggle = () => {
             {/* Tabla de Mesas */}
             <Grid item xs={12} md={8}>
               <TableContainer component={Paper} sx={{ width: '100%' }}>
-                <Typography variant="h4" sx={{ m: 2 }}>
-                  Estado de las Mesas
+                <Typography variant="h5" sx={{ m: 2,  fontWeight: 'bold' }}>
+                  
+                  State of the Tables
                 </Typography>
                 <Table>
                   <TableHead>
@@ -289,8 +291,9 @@ const handleFreezeToggle = () => {
               justifyContent: 'start',
             }}
           >
-          <Typography variant="h4" fontWeight="bold" gutterBottom sx={{  ml: 2, mb: 5 }} >
-            Fecha y hora
+            
+          <Typography variant="h5" fontWeight="bold" gutterBottom sx={{  ml: 2, mb: 5 }} >
+          Date & Time
             </Typography>
 
             <Grid container spacing={2} justifyContent="center">
@@ -308,9 +311,9 @@ const handleFreezeToggle = () => {
                       }}
                     >
                       <Typography variant="h4" fontWeight="bold" gutterBottom>
-                        Hora actual
+                        Current time
                       </Typography>
-                      <Typography variant="h3" color="primary">
+                      <Typography variant="h3" color="#2c2f48">
                         {currentTime.format("HH:mm:ss")}
                       </Typography>
                     </Paper>
@@ -326,6 +329,19 @@ const handleFreezeToggle = () => {
                       displayStaticWrapperAs="desktop"
                       value={selectedDate}
                       onChange={(newValue) => setSelectedDate(newValue)}
+                      slotProps={{
+                        day: {
+                          sx: {
+                            '&.Mui-selected': {
+                              backgroundColor: '#5188a7',
+                              color: 'white',
+                              '&:hover': {
+                                backgroundColor: '#70b6d8',
+                              },
+                            },
+                          },
+                        },
+                      }}
                     />
                   </LocalizationProvider>
                 </Paper>
@@ -340,7 +356,9 @@ const handleFreezeToggle = () => {
               sx={{
                 p: 3,
                 borderRadius: 3,
-                height: '100%',
+                
+                height: '600px',
+                width: '400px',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 2,          // separación vertical entre elementos
@@ -352,31 +370,31 @@ const handleFreezeToggle = () => {
               }}
             >
               <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2 }}>
-                Detalles de la orden
+                    Order details    
               </Typography>
-              <Button variant="contained" onClick={handleFreezeToggle} sx={{ alignSelf: 'center' }}>
-                {freezeTime ? 'Reanudar reloj' : 'Registrar hora'}
+              <Button variant="contained" onClick={handleFreezeToggle} sx={{ alignSelf: 'center',color: 'white', backgroundColor: '#5188a7' }} >
+                {freezeTime ? 'Resume clock' : 'Record time'}
               </Button>
-              <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                Hora Ingresada:
+              <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+                Time Entered:
               </Typography>
-              <Typography variant="body2">
+              <Typography variant="h6">
                 {selectedDate ? selectedDate.format('DD/MM/YYYY') : 'Sin fecha'} - {(freezeTime ? frozenTime : currentTime).format('HH:mm:ss')} hrs
               </Typography>
-              <Typography variant="body1" sx={{ mt: 2, fontWeight: 'bold' }}>
-                Mesa seleccionada:
+              <Typography variant="h5" sx={{ mt: 2, fontWeight: 'bold' }}>
+                Selected table:
               </Typography>
-              <Typography variant="body1" sx={{ mt: 2 }}>
+              <Typography variant="h6" sx={{ mt: 2 }}>
                 {mesaSeleccionada ? mesaSeleccionada.nombre : 'Ninguna'}
               </Typography>
-              <Typography variant="body1" sx={{ mt: 2, fontWeight: 'bold' }}>
-                Platillos seleccionados:
+              <Typography variant="h5" sx={{ mt: 2, fontWeight: 'bold' }}>
+                Selected dishes:
               </Typography>
                 {selectedItems.length === 0 ? (
-              <Typography variant="body2">No se han seleccionado platillos.</Typography>
+              <Typography variant="h6">No dishes have been selected</Typography>
               ) : (selectedItems.map((item) => (
-              <Typography key={item.id} variant="body2">
-                Platillo: {item.name} — Cantidad: {item.quantity}
+              <Typography key={item.id} variant="h6">
+                <strong>Dish:</strong> {item.name} — <strong>Quantity:</strong> {item.quantity}
               </Typography>
             ))
           )}
@@ -392,18 +410,19 @@ const handleFreezeToggle = () => {
     <Button
       variant="contained"
       color="primary"
+      sx={{color: 'white', backgroundColor: '#5188a7' }}
       onClick={() => {
         setOpenDialog(true);
         setCurrentOrderId(null); // Nueva orden
       }}
     >
-      Confirmar orden
+      Confirm order
     </Button>
   </Grid>
 
   <Grid item>
-    <Button onClick={() => setOpenDialog(false)} color="secondary">
-      Cancelar
+    <Button onClick={() => setOpenDialog(false)}  sx={{fontSize: '1.0rem'}} color="#8bbfda">
+      Cancel
     </Button>
   </Grid>
 </Grid>
@@ -428,8 +447,8 @@ const handleFreezeToggle = () => {
   {/* Fila: Tabla de Menú */}
   <Grid item xs={12} >
     <Paper elevation={5} sx={{ p: 2, mt: 4 }}>
-      <Typography variant="h4" sx={{  ml: 2, mb: 5 }}>
-        Menú
+      <Typography variant="h5" sx={{  ml: 2, mb: 5, fontWeight: 'bold' }}>
+          Menu
       </Typography>
       <Grid container spacing={2} justifyContent="center">
   {menuItems.map((item) => {

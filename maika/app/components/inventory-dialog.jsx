@@ -182,7 +182,7 @@ export default function InventoryDialog({
       
       <DialogContent>
   <Container>
-    <Typography variant="h4" color="#5188a7" gutterBottom>
+    <Typography variant="h4" color="#5188a7" gutterBottom sx={{fontWeight: 'bold'}}>
       Product details
     </Typography> 
   </Container>

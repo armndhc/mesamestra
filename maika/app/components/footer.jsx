@@ -18,7 +18,7 @@ export default function Footer() {
                             }}
                         >
                             <Image
-                                src="/logo.jpg"
+                                src="/mesamaestralogo.png"
                                 alt="logo"
                                 width={100}
                                 height={100}
@@ -49,7 +49,7 @@ export default function Footer() {
                         Contact
                     </Typography>
                     <Typography variant="h7" display="block" color="textSecondary">55 78 66 99 41</Typography>
-                    <Typography variant="h7" display="block" color="textSecondary">contact@maika.com</Typography>
+                    <Typography variant="h7" display="block" color="textSecondary">contact@mesamaestra.com</Typography>
                 </Grid>
 
                 <Grid xs={12} ml='auto'>
@@ -67,14 +67,21 @@ export default function Footer() {
                             size="small"
                             sx={{ mr: 1, flexGrow: 1 }}
                         />
-                        <Button variant="contained" color="primary" sx={{
-                            "&:hover": {
-                                backgroundColor: "#e3f2fd",
-                                color: "#1DA1F2",
+                        <Button 
+                            variant="contained"
+                            sx={{ 
+                                backgroundColor: '#2c2f48',
+                                color: 'white',
+                                "&:hover": {
+                                backgroundColor: '#5188a7',
+                                color: 'white',
                                 transform: "scale(1.2)",
                                 transition: "transform 0.3s ease-in-out",
-                            },
-                        }}>Subscribe</Button>
+                                },
+                            }}
+                            >
+                            Subscribe
+                        </Button>
                     </Box>
                 </Grid>
             </Grid>
@@ -85,7 +92,7 @@ export default function Footer() {
                     <MenuItem value="Spanish">Spanish</MenuItem>
                 </Select>
                 <Typography variant="body2" color="textSecondary">
-                    © 2024 Maika, Inc. • <Link href="#">Privacy</Link> • <Link href="#">Terms</Link> • <Link href="#">Sitemap</Link>
+                    © 2025 MesaMestra, Inc. • <Link href="#">Privacy</Link> • <Link href="#">Terms</Link> • <Link href="#">Sitemap</Link>
                 </Typography>
                 {/*Here we have the icons for our social media*/}
                 <Box>

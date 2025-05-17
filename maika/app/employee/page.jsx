@@ -215,7 +215,7 @@ export default function EmployeeTable() {
         }}
       >
         <PeopleIcon sx={{ mr: 1,fontSize: 40 }} />
-        Empleados
+        Employees
       </Typography>
 
       <Tabs value={tabIndex} onChange={handleTabChange} centered>

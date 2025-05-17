@@ -9,7 +9,9 @@ import {
   RadioGroup,
   FormControlLabel,
   TextField,
-  Box
+  Box,
+  Container, 
+  Typography
 } from "@mui/material";
 import Image from "next/image";
 import axios from "axios";
@@ -170,6 +172,11 @@ export default function EmpDialog({
   return (
     <Dialog open={open} onClose={handleCloseDialog}>
       <DialogTitle>{action === "add" ? "Add Employee" : "Edit Employee"}</DialogTitle>
+      <Container>
+        <Typography variant="h4" color="#5188a7" gutterBottom>
+        Employee details
+        </Typography> 
+      </Container>
       <DialogContent>
         <TextField
           margin="dense"
@@ -251,13 +258,17 @@ export default function EmpDialog({
 
       </DialogContent>
       <DialogActions>
-        <Button color="secondary" onClick={handleCloseDialog}>
+        <Button  onClick={handleCloseDialog} sx={{fontSize: '1.0rem'}} color="#8bbfda">
           Cancel
         </Button>
-        <Button color="primary" onClick={saveEmp}>
-          {action === "add" ? "Add" : "Edit"}
+        <Button  
+          variant="contained"
+          size="large"              
+          sx={{ borderRadius: 7, p:1, fontWeight: 'bold', fontSize: '1.2rem', color: 'white', backgroundColor: '#5188a7' }} onClick={saveEmp}  >
+            {action === "add" ? "Add" : "Edit"}
         </Button>
       </DialogActions>
+
     </Dialog>
   );
 }

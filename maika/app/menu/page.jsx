@@ -6,6 +6,7 @@ import Alerts from "../components/alerts";
 import { Container, Typography, Paper , Box, useTheme, Button } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import RestaurantIcon from '@mui/icons-material/Restaurant';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 import Image from "next/image";
 import AddIcon from "@mui/icons-material/Add";
 import MenuDialog from '../components/menu-dialog';
@@ -153,6 +154,7 @@ const handleMenu = ({ action, menu }) => {
 
 
     return(
+        
 
       <Box
       maxWidth="xl"
@@ -160,57 +162,38 @@ const handleMenu = ({ action, menu }) => {
   >
 
           {/*In this grid we use a background image with rounded borders the make a better presentation*/}
-              <Grid
+             
+              
+            <Container maxWidth="xl" disableGutters>
+            <Typography
+                variant="h3"
+                align="center"
+                gutterBottom
                 sx={{
-                  backgroundImage: "url('/Imageback.jpg')",
-                  backgroundRepeat: "no-repeat",
-                  backgroundSize: "cover", // Here we cover al the grid with the image
-                  borderRadius: "5px",
-                  width: "100%",
-                  height: "450px", // Here we adjust the heigt 
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center", 
+                  fontWeight: "bold",
+                  borderBottom: "4px solid #2c2f48",
+                  color: '#2c2f48',
+                  p: 6,
                 }}
               >
-                {/*Here we have the title of the page.*/}
-                <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
-                  <Typography variant="h3" color="white" sx={{ fontWeight: "bold" }}>
-                    MAIKA RESTAURANT
-                  </Typography>
-                </Box>
-                <Box sx={{ display: "flex", justifyContent: "center" }}>
-                  <Typography variant="h4" color="white" sx={{ fontWeight: "bold" }}>
-                    MENU
-                  </Typography>
-                </Box>
-              </Grid>
-              
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt:8,mb:4 }}>
-              <RestaurantIcon sx={{ display: { xs: 'flex' }, mr: 1, fontSize: '6rem', color: theme.palette.secondary.main }} />
-              </Box>
-              <Box sx={{ display: "flex", justifyContent: "center", mb:6 }}>
-                  <Typography variant="h5" color="black" sx={{ fontWeight: "bold" }}>
-                  MAIKA Menú 2024
-                  </Typography>
-              </Box>
-              
-            {/* Add meal button. */}
-            <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
-                <Button
-                    startIcon={<AddIcon />}
-                    variant="contained"
-                    sx={{ borderRadius: 3 }}
-                    onClick={() => handleMenu({ action: "add" })}
-                >
-                    Add Meal
-                </Button>
-            </Box>
+                <MenuBookIcon sx={{ mr: 1,fontSize: 40 }} />
+                Menu
+              </Typography>
+        </Container>
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 5, mb: 5 }}>
+        <Button
+          startIcon={<AddIcon />}
+          variant="contained"
+          size="large"
+          
+          sx={{ borderRadius: 7, p:3, fontWeight: 'bold', fontSize: '1.2rem', color: 'white', backgroundColor: '#5188a7' }}
+          onClick={() => handleMenu({ action: "add" })}
+        >
+          Add Dish
+        </Button>
+      </Box>
 
-              <Grid xs={6} sx={{ border: "solid black 5px",display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              </Grid>
-
+              
             {/*Here we have the container with the menu items, where we have divided it into columns to provide a better view.*/}
             
             <Paper
@@ -272,4 +255,5 @@ const handleMenu = ({ action, menu }) => {
             <Alerts open={openAlert} setOpen={setOpenAlert} alert={alert} />
     </Box>
     );
+    
 };

@@ -4,9 +4,9 @@
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import TableRestaurantIcon from '@mui/icons-material/TableRestaurant';
-import BookIcon from '@mui/icons-material/Book';
+import EventIcon from '@mui/icons-material/Event';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import ReceiptIcon from '@mui/icons-material/Receipt';
+import PaymentIcon from '@mui/icons-material/Payment';
 import {
   Box,
   Container,
@@ -31,7 +31,7 @@ export default function Home() {
       href: "/menu"
     },
     {
-      icon: BookIcon,
+      icon: EventIcon,
       label: "Reservations",
       href: "/reservations"
     },
@@ -46,7 +46,7 @@ export default function Home() {
       href: "/orders"
     },
     {
-      icon: ReceiptIcon,
+      icon: PaymentIcon,
       label: "Payments",
       href: "/payments"
     },
@@ -72,7 +72,7 @@ export default function Home() {
             }}
           >
             <Image
-              src="/logo.jpeg"
+              src="/logorest.png"
               alt="logo"
               width={380}
               height={380}
@@ -101,7 +101,7 @@ export default function Home() {
                   textAlign: "center",
                   borderRadius: 15,
                   "&:hover": {
-                    backgroundColor: theme.palette.secondary.main,
+                    backgroundColor: "#5188a7",
                     transform: "scale(1.05)",
                     transition: "transform 0.4s ease-in-out",
                     boxShadow: "0 10px 20px rgba(0, 0, 0, 0.2)",
@@ -119,7 +119,7 @@ export default function Home() {
                   sx={{
                     fontWeight: "bold",
                     textAlign: "center",
-                    color: theme.palette.primary.main,
+                    color: "#2c2f48",
                     fontSize: "1.6rem",
                   }}
                 >

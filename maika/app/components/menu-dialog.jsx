@@ -7,13 +7,24 @@ import {
     TextField,
     Button,
     Box,
-    Typography
+    Typography,
+    Container,
+    InputAdornment,
   } from "@mui/material";
+  import { 
+    Badge, 
+    Category, 
+    Inventory, 
+    Image as ImageIcon 
+  } from '@mui/icons-material';
   import Image from "next/image";
   import { useState, useEffect } from "react";
   import { MENU_API } from "../constants/menu/constants";
   import axios from "axios";
-  
+  import RestaurantIcon from '@mui/icons-material/Restaurant';
+  import DescriptionIcon from '@mui/icons-material/Description';
+  import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+
   // Menu dialog.
   export default function MenuDialog({
     open,
@@ -133,18 +144,31 @@ import {
     // Component.
     return (
       <Dialog open={open} onClose={handleCloseDialog}>
-        <DialogTitle>Add Meal</DialogTitle>
+        <DialogTitle>Add Dish</DialogTitle>
         <DialogContent>
+          <Container>
+            <Typography variant="h4" color="#5188a7" gutterBottom sx={{fontWeight: 'bold'}} >
+              Dish details
+            </Typography> 
+          </Container>
           {/* Meal field. */}
           <TextField
             margin="dense"
             name="meal"
-            label="Meal"
+            label="Dish"
             fullWidth
             value={menu.meal}
             onChange={handleChange}
             error={!!errors.name}
             helperText={errors.name}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <RestaurantIcon/>
+                </InputAdornment>
+              ),
+            }}
+            sx={{ mb: 2 }}
           />
           {/* Unit field. */}
           <TextField
@@ -156,6 +180,14 @@ import {
             onChange={handleChange}
             error={!!errors.unit}
             helperText={errors.unit}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <DescriptionIcon />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ mb: 2 }}
           />
           {/* Price field. */}
           <TextField
@@ -169,6 +201,15 @@ import {
             error={!!errors.existence}
             helperText={errors.existence}
             inputProps={{ min: 0 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <AttachMoneyIcon />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ mb: 2 }}
+            
           />
           {/* Image field. */}
           <TextField
@@ -178,6 +219,14 @@ import {
             onChange={handleImageChange}
             error={!!errors.image}
             helperText={errors.image}
+            fullWidth
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <ImageIcon />
+                </InputAdornment>
+              ),
+            }}
             sx={{ mb: 2 }}
           />
         {/* Image preview. */}
@@ -195,14 +244,18 @@ import {
         )}
       </DialogContent>
       {/* Action buttons. */}
+
       <DialogActions>
-        <Button color="secondary" onClick={handleCloseDialog}>
+        <Button  onClick={handleCloseDialog} sx={{fontSize: '1.0rem'}} color="#8bbfda">
           Cancel
         </Button>
-        <Button color="primary" onClick={saveMenu}>
-          {action === "add" ? "Add" : "Save"}
+        <Button  
+          variant="contained"
+          size="large"             
+          sx={{ borderRadius: 7, p:1, fontWeight: 'bold', fontSize: '1.2rem', color: 'white', backgroundColor: '#5188a7' }} onClick={saveMenu}  >
+            {action === "add" ? "Add" : "Save"}
         </Button>
-      </DialogActions>
+      </DialogActions>  
     </Dialog>
   );
 }

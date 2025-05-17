@@ -5,7 +5,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import EventIcon from '@mui/icons-material/Event';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import PaymentIcon from '@mui/icons-material/Payment';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import TableRestaurantIcon from '@mui/icons-material/TableRestaurant';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import PeopleIcon from '@mui/icons-material/People';
 import Link from "next/link";
@@ -16,12 +16,12 @@ export default function AppbarGlobal() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const navItems = [
-    { label: "Inicio", href: "/", icon: <HomeIcon /> },
-    { label: "Reservations", href: "/reservations", icon: <EventIcon /> },
+    { label: "Home", href: "/", icon: <HomeIcon /> },
     { label: "Menu", href: "/menu", icon: <RestaurantMenuIcon /> },
-    { label: "Payments", href: "/payments", icon: <PaymentIcon /> },
-    { label: "Orders", href: "/orders", icon: <ShoppingCartIcon /> },
+    { label: "Reservations", href: "/reservations", icon: <EventIcon /> },
     { label: "Inventory", href: "/inventory", icon: <InventoryIcon /> },
+    { label: "Orders", href: "/orders", icon: <TableRestaurantIcon /> },
+    { label: "Payments", href: "/payments", icon: <PaymentIcon /> },
     { label: "Employees", href: "/employee", icon: <PeopleIcon /> },
 
     { label: "Prueba", href: "/prueba", icon: <PeopleIcon /> },
@@ -53,14 +53,14 @@ export default function AppbarGlobal() {
 
         <Button onClick={handleOpen} variant="contained" sx={{
           backgroundColor: "#5188a7",
-          color: "#87c3df",
+          color: "#white",
           "&:hover": {
-              backgroundColor: "#e3f2fd",
-              color: "#1DA1F2",
+              backgroundColor: "#white",
+              color: "#white",
               transform: "scale(1.2)",
               transition: "transform 0.3s ease-in-out",
           },
-          }}>Ingresar
+          }}>Log in
         </Button>
         <Modal open={open} onClose={handleClose}>
           <Box sx={{ position: 'absolute', top: '200%', left: '200%', transform: 'translate(-50%, -50%)', bgcolor: 'white', p: 4, borderRadius: 2, boxShadow: 24, width: 300,}}>
@@ -97,15 +97,15 @@ export default function AppbarGlobal() {
         <Box sx={{ width: 250 }} role="presentation" onClick={() => setDrawerOpen(false)}>
           <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", my: 2 }}>
             <Image
-              src="/mesamaestralogo.png"
+              src="/logorest.png"
               alt="Logo"
               width={200}
               height={200}
               priority
             />
             <Typography variant="h6" sx={{ fontWeight: 'bold'}}>
-              <Box component="span" sx={{ color: '#5188a7' }}>Mesa</Box>
-              <Box component="span" sx={{ color: '#87c3df' }}>Maestra</Box>
+              <Box component="span" sx={{ color: '#f8297a' }}>La</Box>
+              <Box component="span" sx={{ color: '#a42a4c' }}>Sierra</Box> 
             </Typography>
           </Box>
 

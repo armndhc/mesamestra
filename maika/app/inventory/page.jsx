@@ -288,24 +288,21 @@ export default function Inventory() {
     return (
         <Container maxWidth="xl" disableGutters>
             <Typography
-        variant="h3"
-        align="center"
-        gutterBottom
-        sx={{
-          fontWeight: "bold",
-          borderBottom: "4px solid #2c2f48",
-          color: '#2c2f48',
-          p: 4,
-        }}
-      >
-        <InventoryIcon sx={{ mr: 1,fontSize: 40 }} />
-        Inventario
-      </Typography>
+                variant="h3"
+                align="center"
+                gutterBottom
+                sx={{
+                fontWeight: "bold",
+                borderBottom: "4px solid #2c2f48",
+                color: '#2c2f48',
+                p: 4,
+                }}
+            >
+                <InventoryIcon sx={{ mr: 1,fontSize: 40 }} />
+                Inventory
+            </Typography>
             {/* Add inventory button. */}
-            
-          
-
-           
+                      
             <Box sx={{ display: "flex", justifyContent: "center",   mt: 5, mb: 5 }}>
                 <Button
                     startIcon={<AddIcon />}
