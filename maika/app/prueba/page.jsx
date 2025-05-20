@@ -135,7 +135,44 @@ export default function App(onAddOrder, order) {
 
 
 
-  
+  //SIMULACION DE LA BASE DE DATOS DEL MENU
+  const menuItems = [
+    { id: 1, name: "Pizza", price: 120, image: "/pizza.jpg" },
+    { id: 2, name: "Pasta", price: 95, image: "/pasta.jpg" },
+    { id: 3, name: "Pizza", price: 120, image: "/pizza.jpg" },
+    { id: 4, name: "Pasta", price: 95, image: "/pasta.jpg" },
+    { id: 5, name: "Pizza", price: 120, image: "/pizza.jpg" },
+    { id: 6, name: "Pasta", price: 95, image: "/pasta.jpg" },
+    { id: 7, name: "Pizza", price: 120, image: "/pizza.jpg" },
+    { id: 8, name: "Pasta", price: 95, image: "/pasta.jpg" },
+    { id: 9, name: "Pizza", price: 120, image: "/pizza.jpg" },
+    { id: 20, name: "Pasta", price: 95, image: "/pasta.jpg" },
+    { id: 21, name: "Pizza", price: 120, image: "/pizza.jpg" },
+    { id: 22, name: "Pasta", price: 95, image: "/pasta.jpg" },
+    { id: 23, name: "Pizza", price: 120, image: "/pizza.jpg" },
+    { id: 30, name: "Pasta", price: 95, image: "/pasta.jpg" },
+    { id: 31, name: "Pizza", price: 120, image: "/pizza.jpg" },
+    { id: 32, name: "Pasta", price: 95, image: "/pasta.jpg" },
+    { id: 33, name: "Pizza", price: 120, image: "/pizza.jpg" },
+   
+    // ...
+  ];
+  const [selectedItems, setSelectedItems] = useState([]);
+  const handleSelectItem = (item) => {
+    setSelectedItems((prev) => {
+      const exists = prev.find((i) => i.id === item.id);
+      if (exists) {
+        // Si ya está seleccionado, lo quitamos
+        return prev.filter((i) => i.id !== item.id);
+      } else {
+        // Si no está, lo agregamos con cantidad 1
+        return [...prev, { ...item, quantity: 1 }];
+      }
+    });
+  };
+
+
+
 
   //hora
   const [selectedDate, setSelectedDate] = useState(dayjs());
@@ -471,7 +508,55 @@ const handleFreezeToggle = () => {
   
   </Grid>
 
- 
+  {/* Fila: Tabla de Menú */}
+  <Grid item xs={12} >
+    <Paper elevation={5} sx={{ p: 2, mt: 4 }}>
+      <Typography variant="h5" sx={{  ml: 2, mb: 5, fontWeight: 'bold' }}>
+          Menu
+      </Typography>
+      <Grid container spacing={2} justifyContent="center">
+  {menuItems.map((item) => {
+    const selected = selectedItems.find(i => i.id === item.id);
+
+    return (
+      <Grid item xs={12} sm={6} md={2.4} key={item.id}>
+        <Card onClick={() => handleSelectItem(item)} sx={{ cursor: 'pointer' }}>
+          <CardMedia
+            component="img"
+            height="140"
+            image={item.image}
+            alt={item.name}
+          />
+          <CardContent>
+            <Typography variant="h6" fontWeight="bold">{item.name}</Typography>
+            <Typography color="text.secondary">${item.price}</Typography>
+
+            {selected && (
+              <>
+                <Typography variant="body2" color="success.main" sx={{ mt: 1 }}>
+                  Seleccionado
+                </Typography>
+                <TextField
+                  type="number"
+                  label="Cantidad"
+                  size="small"
+                  value={selected.quantity}
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={(e) => handleQuantityChange(item.id, e.target.value)}
+                  inputProps={{ min: 1 }}
+                  sx={{ mt: 1 }}
+                />
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </Grid>
+    );
+  })}
+</Grid>
+  
+    </Paper>
+  </Grid>
 
 
 

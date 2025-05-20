@@ -12,9 +12,12 @@ import {
   DialogActions,
   TextField,
   MenuItem,
+  Box
 } from '@mui/material';
 import Grid from "@mui/material/Grid2";
 import Alerts from '../components/alerts'; // Import the Alerts component
+import PaymentIcon from '@mui/icons-material/Payment';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
 import { PAYMENTS_API } from '../constants/payments/constants';
 import axios from 'axios';
 
@@ -118,26 +121,64 @@ export default function TicketPage() {
   
 
   return (
-    <Container sx={{ py: 12 }}>
-      <Typography variant="h4" gutterBottom align="center">
+    <Box
+      maxWidth="xl"
+      sx={{ mx: "10%" }}
+    >
+      <Container maxWidth="xl" disableGutters>
+        <Typography
+          variant="h3"
+          align="center"
+          gutterBottom
+          sx={{
+            fontWeight: "bold",
+            borderBottom: "4px solid #2c2f48",
+            color: '#2c2f48',
+            p: 6,
+          }}
+        >
+          <PaymentIcon sx={{ mr: 1, fontSize: 40 }} />
+          Payments 
+        </Typography>
+      </Container>
+
+      <Paper       
+        elevation={5}
+        sx={{
+          mt:6,
+          p: 3,
+          height: '880px',
+          width: '100%',
+          overflow: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+      <Typography variant="h4" fontWeight="bold" gutterBottom sx={{ ml: 2, mb: 5 }}>
         Select an Order to Generate a Ticket
       </Typography>
-      <Grid container spacing={2}>
+
+      <Grid container justifyContent="center" spacing={2}>
         {orders.map((order) => (
           <Grid key={order._id} xs={12} sm={6} md={4}>
-            <Paper style={{ padding: '16px', margin: '8px 0' }}>
-              <Typography variant="h6">Order #{order._id}</Typography>
-              <Typography>Name: {order.name}</Typography>
-              <Typography>Table: {order.table}</Typography>
-              <Typography>Dishes:</Typography>
+            <Paper elevation={3} style={{ padding: '16px', margin: '8px 0' }}>
+              <Typography variant="h6" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
+                <Box component="span" sx={{ color: '#2c2f48' }}>Order #{order._id}</Box>
+              </Typography>
+
+              <Typography variant="subtitle1"> <strong>Name:</strong> {order.name}</Typography>
+              <Typography variant="subtitle1"> <strong>Table:</strong> {order.table}</Typography>
+              <Typography variant="subtitle1"> <strong>Dishes:</strong> </Typography>
               {order.dishes.map((dish, idx) => (
                 <Typography key={idx}>
-                  {">"} {dish.name} ({dish.price}) - Quantity: {dish.quantity}
+                  <RestaurantIcon sx={{ ml: 2, mr: 1, fontSize: 20, color: "#2c2f48" }}/> <strong>{dish.name}</strong> ${dish.price} 
+                  <Typography sx={{ ml: 6, borderBottom: "1px solid #2c2f48",}}> Quantity: {dish.quantity}</Typography>
                 </Typography>
               ))}
               <Button
                 variant="contained"
-                color="primary"
+                fullWidth
+                sx={{mt: 2, bgcolor: '#4caf50', '&:hover': { bgcolor: '#388e3c' } }}
                 onClick={() => handleGenerateTicket(order)} // Generate ticket for this order
               >
                 Generate Ticket
@@ -146,39 +187,54 @@ export default function TicketPage() {
           </Grid>
         ))}
       </Grid>
+      </Paper>
 
-      <Typography variant="h4" gutterBottom align="center">
-        Payments
-      </Typography>
-      <Grid container spacing={2}>
-        {payments.map((payment) => (
-          <Grid key={payment._id} xs={12} sm={6} md={4}>
-            <Paper style={{ padding: '16px', margin: '8px 0' }}>
-              <Typography variant="h6">Payment #{payment._id}</Typography>
-              <Typography variant="h6">Order #{payment.order_id}</Typography>
-              <Typography>Name: {payment.name}</Typography>
-              <Typography>Table: {payment.table}</Typography>
-              <Typography>Dishes:</Typography>
-              {payment.dishes.map((dish, idx) => (
-                <Typography key={idx}>
-                  {">"} {dish.name} ({dish.price}) - Quantity: {dish.quantity}
-                </Typography>
-              ))}
-              <Typography>Total: {payment.total}</Typography>
-              <Typography>RFC: {payment.rfc}</Typography>
-              <Typography>Payment method: {payment.payment_type}</Typography>
+      <Paper       
+        elevation={5}
+        sx={{
+          mt:6,
+          p: 3,
+          height: '880px',
+          width: '100%',
+          overflow: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <Typography variant="h4" fontWeight="bold" gutterBottom sx={{ ml: 2, mb: 5 }}>
+          Payments
+        </Typography>
+        <Grid container spacing={2}>
+          {payments.map((payment) => (
+            <Grid key={payment._id} xs={12} sm={6} md={4}>
+              <Paper elevation={3} style={{ padding: '16px', margin: '8px 0' }}>
+                <Typography variant="h6">Payment #{payment._id}</Typography>
+                <Typography variant="h6">Order #{payment.order_id}</Typography>
+                <Typography>Name: {payment.name}</Typography>
+                <Typography>Table: {payment.table}</Typography>
+                <Typography>Dishes:</Typography>
+                {payment.dishes.map((dish, idx) => (
+                  <Typography key={idx}>
+                    {">"} {dish.name} ({dish.price}) - Quantity: {dish.quantity}
+                  </Typography>
+                ))}
+                <Typography>Total: {payment.total}</Typography>
+                <Typography>RFC: {payment.rfc}</Typography>
+                <Typography>Payment method: {payment.payment_type}</Typography>
 
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() =>  handleDeletePayment(payment._id)} // Generate ticket for this order
-              >
-                HIDE TICKET
-              </Button>
-            </Paper>
-          </Grid>
-        ))}
-      </Grid>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: 2, color: 'white', backgroundColor: '#5188a7' }}
+                  onClick={() =>  handleDeletePayment(payment._id)} // Generate ticket for this order
+                >
+                  HIDE TICKET
+                </Button>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
+      </Paper>
 
       {/* Payment Dialog */}
       <Dialog open={openDialog} onClose={() => {
@@ -216,13 +272,13 @@ export default function TicketPage() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => {
+          <Button sx={{fontSize: '1.0rem'}}  onClick={() => {
             console.log("Payment dialog canceled"); // Log when cancel button is clicked
             setOpenDialog(false);
-          }} color="secondary">
+          }} color="#8bbfda">
             Cancel
           </Button>
-          <Button onClick={handlePayment} color="primary">
+          <Button sx={{ color: 'white', backgroundColor: '#5188a7' }} onClick={handlePayment} >
             Pay
           </Button>
         </DialogActions>
@@ -230,6 +286,7 @@ export default function TicketPage() {
 
       {/* Alerts for payment actions */}
       <Alerts open={openAlert} setOpen={setOpenAlert} alert={alert} setAlert={setAlert} />
-    </Container>
+    
+    </Box>
   );
 }

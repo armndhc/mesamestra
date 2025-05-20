@@ -33,8 +33,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { TextField } from '@mui/material';
 
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
 import Alerts from "../components/alerts"; // Import the Alerts component
 import axios from "axios";
@@ -43,8 +41,6 @@ import { ORDERS_API } from '../constants/orders/constants'; // Import the API co
 export default function App() {
   // Estados originales de App
   const [orders, setOrders] = useState([]); // State to manage the list of orders
-  const [openDialog, setOpenDialog] = useState(false); // State to manage the visibility of the dialog
-  const [currentOrderId, setCurrentOrderId] = useState(null); // State for the ID of the current order
   const [alert, setAlert] = useState({ severity: "success", message: "" }); // State for alert messages
   const [openAlert, setOpenAlert] = useState(false); // State for alert visibility
 
@@ -254,6 +250,7 @@ export default function App() {
 
       <Container maxWidth="xl" sx={{ minHeight: "800px" }}>
         <Grid container justifyContent="center" spacing={4} sx={{ px: 4, mt: 4 }}>
+          
           {/* Columna 1: Fecha y Hora */}
           <Grid item xs={12} md={4}>
             <Paper
@@ -328,7 +325,7 @@ export default function App() {
             </Paper>
           </Grid>
 
-          {/* Columna 2: Formulario de Orden */}
+          {/* Formulario de Orden */}
           <Grid item xs={12} md={4}>
             <Paper
               elevation={5}
@@ -451,11 +448,79 @@ export default function App() {
             </Paper>
           </Grid>
 
-          {/* Columna 3: Órdenes Activas */}
-          <Grid item xs={12} md={4}>
-            <Paper
+          {/* Órdenes Activas */}
+          <Grid  item xs={12} md={4}>
+          <Paper elevation={5} sx={{ p: 2, mt: 4 }}>
+          <Typography variant="h5" sx={{ ml: 2, mb: 5, fontWeight: 'bold' }}>
+            Menu
+          </Typography>
+          
+          {loading ? (
+            <Typography sx={{ textAlign: 'center', p: 4 }}>Loading menu...</Typography>
+          ) : error ? (
+            <Typography sx={{ textAlign: 'center', p: 4, color: 'error.main' }}>{error}</Typography>
+          ) : (
+            <Grid container spacing={2} justifyContent="center">
+              {menuItems.map((item) => {
+                const selected = selectedItems.find(i => i._id === item._id);
+
+                return (
+                  <Grid item xs={12} sm={6} md={.4} key={item._id} sx={{ display: 'flex' }}>
+                    <Card 
+                      onClick={() => handleSelectItem(item)} 
+                      sx={{ 
+                        cursor: 'pointer', 
+                        height: '100%', 
+                        width: '100%',
+                        border: selected ? '2px solid #5188a7' : 'none'
+                      }}
+                    >
+                      <CardMedia
+                        component="img"
+                        height="140"
+                        image={item.image}
+                        alt={item.meal}
+                      />
+                      <CardContent>
+                        <Typography variant="h6" fontWeight="bold">
+                          {item.meal}
+                        </Typography>
+                        <Typography color="text.secondary">
+                          ${item.price.toFixed(2)}
+                        </Typography>
+
+                        {selected && (
+                          <>
+                            <Typography variant="body2" color="success.main" sx={{ mt: 1 }}>
+                              Selected
+                            </Typography>
+                            <TextField
+                              type="number"
+                              label="Quantity"
+                              size="small"
+                              value={selected.quantity}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={(e) => handleQuantityChange(item._id, e.target.value)}
+                              inputProps={{ min: 1 }}
+                              sx={{ mt: 1 }}
+                            />
+                          </>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                );
+              })}
+            </Grid>
+          )}
+        </Paper>
+          </Grid>
+        </Grid>
+        
+        <Paper       
               elevation={5}
               sx={{
+                mt:6,
                 p: 3,
                 height: '880px',
                 width: '100%',
@@ -529,74 +594,9 @@ export default function App() {
                 </Grid>
               )}
             </Paper>
-          </Grid>
-        </Grid>
 
         {/* Sección del Menú */}
-        <Paper elevation={5} sx={{ p: 2, mt: 4 }}>
-          <Typography variant="h5" sx={{ ml: 2, mb: 5, fontWeight: 'bold' }}>
-            Menu
-          </Typography>
-          
-          {loading ? (
-            <Typography sx={{ textAlign: 'center', p: 4 }}>Loading menu...</Typography>
-          ) : error ? (
-            <Typography sx={{ textAlign: 'center', p: 4, color: 'error.main' }}>{error}</Typography>
-          ) : (
-            <Grid container spacing={2} justifyContent="center">
-              {menuItems.map((item) => {
-                const selected = selectedItems.find(i => i._id === item._id);
-
-                return (
-                  <Grid item xs={12} sm={6} md={2.4} key={item._id} sx={{ display: 'flex' }}>
-                    <Card 
-                      onClick={() => handleSelectItem(item)} 
-                      sx={{ 
-                        cursor: 'pointer', 
-                        height: '100%', 
-                        width: '100%',
-                        border: selected ? '2px solid #5188a7' : 'none'
-                      }}
-                    >
-                      <CardMedia
-                        component="img"
-                        height="140"
-                        image={item.image}
-                        alt={item.meal}
-                      />
-                      <CardContent>
-                        <Typography variant="h6" fontWeight="bold">
-                          {item.meal}
-                        </Typography>
-                        <Typography color="text.secondary">
-                          ${item.price.toFixed(2)}
-                        </Typography>
-
-                        {selected && (
-                          <>
-                            <Typography variant="body2" color="success.main" sx={{ mt: 1 }}>
-                              Selected
-                            </Typography>
-                            <TextField
-                              type="number"
-                              label="Quantity"
-                              size="small"
-                              value={selected.quantity}
-                              onClick={(e) => e.stopPropagation()}
-                              onChange={(e) => handleQuantityChange(item._id, e.target.value)}
-                              inputProps={{ min: 1 }}
-                              sx={{ mt: 1 }}
-                            />
-                          </>
-                        )}
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                );
-              })}
-            </Grid>
-          )}
-        </Paper>
+       
       </Container>
 
       {/* Alerta para mensajes al usuario */}
