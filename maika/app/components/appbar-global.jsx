@@ -1,5 +1,5 @@
 "use client";
-import {AppBar, Modal, TextField, Box, Button, Toolbar, IconButton, Drawer, List, ListItem, ListItemButton, ListItemText, Typography} from "@mui/material";
+import {AppBar, Box, Button, Toolbar, IconButton, Drawer, List, ListItem, ListItemButton, ListItemText, Typography} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import HomeIcon from '@mui/icons-material/Home';
 import EventIcon from '@mui/icons-material/Event';
@@ -11,6 +11,8 @@ import PeopleIcon from '@mui/icons-material/People';
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+// Importamos el componente LoginModal
+import SignIn from "./login"; // Ajusta la ruta según donde lo hayas creado
 
 export default function AppbarGlobal() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -23,13 +25,46 @@ export default function AppbarGlobal() {
     { label: "Orders", href: "/orders", icon: <TableRestaurantIcon /> },
     { label: "Payments", href: "/payments", icon: <PaymentIcon /> },
     { label: "Employees", href: "/employee", icon: <PeopleIcon /> },
-
     { label: "Prueba", href: "/prueba", icon: <PeopleIcon /> },
   ];
 
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [action, setAction] = useState("");
+  const [menu, setMenu] = useState({
+    _id: null,
+    meal: "",
+    description: "",
+    price: 0,
+    image: null
+  });
+
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleLogin = ({ action }) => {
+    // Update action.
+    setAction(action);
+  
+    // Open dialog.
+    setOpenDialog(true);
+  
+    // Select action.
+    if (action === "login") {
+        setMenu({
+            _id: null,
+            meal: "",
+            description: "",
+            price: 0,
+            image: null
+        });
+    } 
+    else {
+        console.warn("Unknown action:", action);
+    }
+  };
+
+  // Función para cerrar el modal de login
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
 
   return (
     <>
@@ -51,43 +86,28 @@ export default function AppbarGlobal() {
           </Typography>
         </Box>
 
-        <Button onClick={handleOpen} variant="contained" sx={{
-          backgroundColor: "#5188a7",
-          color: "#white",
-          "&:hover": {
-              backgroundColor: "#white",
-              color: "#white",
-              transform: "scale(1.2)",
-              transition: "transform 0.3s ease-in-out",
-          },
-          }}>Log in
+        <Button 
+          onClick={() => handleLogin({ action: "login" })} 
+          variant="contained" 
+          sx={{
+            backgroundColor: "#5188a7",
+            color: "#white",
+            "&:hover": {
+                backgroundColor: "#white",
+                color: "#white",
+                transform: "scale(1.2)",
+                transition: "transform 0.3s ease-in-out",
+            },
+          }}
+        >
+          Log in
         </Button>
-        <Modal open={open} onClose={handleClose}>
-          <Box sx={{ position: 'absolute', top: '200%', left: '200%', transform: 'translate(-50%, -50%)', bgcolor: 'white', p: 4, borderRadius: 2, boxShadow: 24, width: 300,}}>
-            <Typography variant="h6" mb={2}>Iniciar Sesión</Typography>
-              <TextField
-                fullWidth
-                label="Correo electrónico"
-                variant="outlined"
-                margin="normal"
-              />
-              <TextField
-                fullWidth
-                label="Contraseña"
-                type="password"
-                variant="outlined"
-                margin="normal"
-              />
-              <Button
-                fullWidth
-                variant="contained"
-                sx={{ mt: 2, backgroundColor: "#5188a7", color: "#fff" }}
-              >
-                Entrar
-              </Button>
-          </Box>
-        </Modal>
-     
+        
+        {/* Usamos el componente LoginModal importado */}
+        <SignIn 
+          open={openDialog} 
+          onClose={handleCloseDialog} 
+        />
           
         </Toolbar>
       </AppBar>
