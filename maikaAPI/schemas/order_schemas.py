@@ -1,42 +1,45 @@
-from marshmallow import Schema, fields, validates, ValidationError
-import re
+from marshmallow import ValidationError
 
-class OrderSchema(Schema):
-    # Fields with validation
-    name = fields.String(required=True)
-    table = fields.Integer(required=True)
-    dishes = fields.List(fields.Dict(), required=True)
-
-    @validates('name')
-    def validate_name(self, value):
-        # Check that the name contains at least two words (first and last name)
-        if len(value.split()) < 2:
-            raise ValidationError('The name must include both first and last name.')
-        if not re.match(r"^[a-zA-Z ]+$", value):
-            raise ValidationError('The name must only contain alphabetic characters and spaces.')
+class OrderSchema:
+    def validate_name(self, name):
+        if not name or not isinstance(name, str):
+            raise ValidationError("Name must be a non-empty string")
         
-    @validates('table')
-    def validate_table(self, value):
-        if value <= 0:
-            raise ValidationError('The table number must be greater than 0.')
-        if value >= 100:
-            raise ValidationError('The table number must be less than 100.')
-
-    @validates('dishes')
-    def validate_dishes(self, value):
-        # Check if the list of dishes is not empty
-        if not value:
-            raise ValidationError('The order must include at least one dish.')
-
-        for dish in value:
-            # Validate that each dish has a valid name
+    def validate_table(self, table):
+        if not isinstance(table, int) or table <= 0 or table > 100:
+            raise ValidationError("Table must be a positive integer between 1 and 100")
+            
+    def validate_dishes(self, dishes):
+        if not dishes or not isinstance(dishes, list) or len(dishes) == 0:
+            raise ValidationError("Dishes must be a non-empty list")
+            
+        for dish in dishes:
+            if not isinstance(dish, dict):
+                raise ValidationError("Each dish must be an object")
+                
             if 'name' not in dish or not dish['name']:
-                raise ValidationError('Each dish must have a valid name.')
-            # Validate that the price of the dish is greater than 0
-            if 'price' not in dish or dish['price'] <= 0:
-                raise ValidationError('The price of each dish must be greater than 0.')
-            # Validate that the quantity of the dish is greater than 0
-            if 'quantity' not in dish or dish['quantity'] <= 0:
-                raise ValidationError('The quantity of each dish must be greater than 0.')
-
-
+                raise ValidationError("Each dish must have a name")
+                
+            if 'price' not in dish or not isinstance(dish['price'], (int, float)) or dish['price'] <= 0:
+                raise ValidationError("Each dish must have a positive price")
+                
+            if 'quantity' not in dish or not isinstance(dish['quantity'], int) or dish['quantity'] <= 0:
+                raise ValidationError("Each dish must have a positive quantity")
+    
+    def validate_time(self, time):
+        """Valida que el tiempo tenga el formato correcto (HH:MM:SS)"""
+        if not time or not isinstance(time, str):
+            raise ValidationError("Time must be a non-empty string")
+            
+        # Validación básica del formato de tiempo (HH:MM:SS)
+        try:
+            parts = time.split(':')
+            if len(parts) != 3:
+                raise ValidationError("Time format should be HH:MM:SS")
+                
+            hours, minutes, seconds = int(parts[0]), int(parts[1]), int(parts[2])
+            
+            if hours < 0 or hours > 23 or minutes < 0 or minutes > 59 or seconds < 0 or seconds > 59:
+                raise ValidationError("Invalid time values")
+        except (ValueError, IndexError):
+            raise ValidationError("Invalid time format")

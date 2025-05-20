@@ -25,6 +25,7 @@ from services.order_service import OrderService
 from schemas.order_schemas import OrderSchema
 from routes.order_route import OrderRoutes
 from routes.healthcheck_routes import HealthcheckRoutes
+
 from flasgger import Swagger
 
 app = Flask(__name__)
@@ -79,6 +80,7 @@ order_service = OrderService(db_conn_order)
 order_schema = OrderSchema()
 order_routes = OrderRoutes(order_service, order_schema)
 app.register_blueprint(order_routes)
+
 
 #Healthcheck
 healthcheck_routes = HealthcheckRoutes()

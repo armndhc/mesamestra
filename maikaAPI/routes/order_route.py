@@ -43,13 +43,17 @@ class OrderRoutes(Blueprint):
                                         'quantity': {'type': 'integer', 'example': 2}
                                     }
                                 }
-                            }
+                            },
+                            'time': {'type': 'string', 'example': '14:30:00'},
+                            'status': {'type': 'string', 'example': 'pending'}
                         }
                     }
                 }
             }
         }
     })
+        
+    
     def get_orders(self):
         orders = self.order_service.get_all_orders()
         return jsonify(orders), 200
@@ -57,7 +61,7 @@ class OrderRoutes(Blueprint):
     @swag_from({
         'tags': ['Orders'],
         'summary': 'Create a new order',
-        'description': 'Add a new order with a name, table number, and dishes.',
+        'description': 'Add a new order with a name, table number, dishes, and time.',
         'parameters': [
             {
                 'name': 'body',
@@ -78,7 +82,8 @@ class OrderRoutes(Blueprint):
                                     'quantity': {'type': 'integer', 'example': 2}
                                 }
                             }
-                        }
+                        },
+                        'time': {'type': 'string', 'example': '14:30:00'}
                     },
                     'required': ['name', 'table', 'dishes']
                 }
@@ -99,12 +104,16 @@ class OrderRoutes(Blueprint):
             name = request_data.get('name')
             table = request_data.get('table')
             dishes = request_data.get('dishes')
+            time = request_data.get('time')  # Opcional, capturamos el tiempo
 
             # Validate fields
             try:
                 self.order_schema.validate_name(name)
                 self.order_schema.validate_table(table)
                 self.order_schema.validate_dishes(dishes)
+                # Opcional, validar tiempo si se proporciona
+                if time:
+                    self.order_schema.validate_time(time)
             except ValidationError as e:
                 return jsonify({'error': f'Invalid data: {e}'}), 400
 
@@ -112,9 +121,12 @@ class OrderRoutes(Blueprint):
                 'name': name,
                 'table': table,
                 'dishes': dishes,
-                'status':"pending"
-                
+                'status': "pending"
             }
+            
+            # Si se proporciona tiempo, lo añadimos a la orden
+            if time:
+                new_order['time'] = time
 
             created_order = self.order_service.add_order(new_order)
             self.logger.info(f'New Order Created: {created_order}')
@@ -155,7 +167,8 @@ class OrderRoutes(Blueprint):
                                     'quantity': {'type': 'integer', 'example': 2}
                                 }
                             }
-                        }
+                        },
+                        'time': {'type': 'string', 'example': '14:30:00'}
                     },
                     'required': ['name', 'table', 'dishes']
                 }
@@ -177,12 +190,16 @@ class OrderRoutes(Blueprint):
             name = request_data.get('name')
             table = request_data.get('table')
             dishes = request_data.get('dishes')
+            time = request_data.get('time')  # Opcional, capturamos el tiempo
 
             # Validate fields
             try:
                 self.order_schema.validate_name(name)
                 self.order_schema.validate_table(table)
                 self.order_schema.validate_dishes(dishes)
+                # Opcional, validar tiempo si se proporciona
+                if time:
+                    self.order_schema.validate_time(time)
             except ValidationError as e:
                 return jsonify({'error': f'Invalid data: {e}'}), 400
 
@@ -191,8 +208,11 @@ class OrderRoutes(Blueprint):
                 'name': name,
                 'table': table,
                 'dishes': dishes,
-                
             }
+            
+            # Si se proporciona tiempo, lo añadimos a la orden
+            if time:
+                update_order['time'] = time
 
             updated_order = self.order_service.update_order(order_id, update_order)
             if updated_order:

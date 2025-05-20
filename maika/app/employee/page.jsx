@@ -202,6 +202,11 @@ export default function EmployeeTable() {
   ];
 
   return (
+
+          <Box
+          maxWidth="xl"
+          sx={{ mx: "10%" }}
+      >
     <Container maxWidth="xl" disableGutters>
       <Typography
         variant="h3"
@@ -304,5 +309,6 @@ export default function EmployeeTable() {
       />
       <Alerts open={openAlert} setOpen={setOpenAlert} alert={alert} setAlert={setAlert} />
     </Container>
+  </Box>
   );
 }
