@@ -32,14 +32,16 @@ export default function EmployeeTable() {
     name: "",
     title: "",
     email: "",
+    username: "",
+    password: "",
     salary: "",
-    birthday: "",
     status: true, 
     avatar: "",
   });
 
   const [openDialog, setOpenDialog] = useState(false);
   const [rows, setRows] = useState([]);
+  const [users, setUsers] = useState([]);
   const [openAlert, setOpenAlert] = useState(false);
   const [alert, setAlert] = useState({
     message: "",
@@ -48,6 +50,7 @@ export default function EmployeeTable() {
 
   useEffect(() => {
     fetchEmployees();
+    fetchUsers();
   }, []);
 
   const fetchEmployees = async () => {
@@ -62,7 +65,25 @@ export default function EmployeeTable() {
       });
       setOpenAlert(true);
     }
+  };
 
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get("http://127.0.0.1:5000/api/v1/users");
+      const mappedUsers = response.data.map((user, index) => ({
+        id: index + 1,
+        name: user.name,
+        username: user.username,
+        password: user.password
+      }));
+      setUsers(mappedUsers);
+    } catch (error) {
+      setAlert({
+        message: "Failed to fetch users",
+        severity: "error",
+      });
+      setOpenAlert(true);
+    }
   };
 
   const handleEmp = ({ action, employee }) => {
@@ -128,11 +149,10 @@ export default function EmployeeTable() {
     }
     setOpenAlert(true);
   };
+
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
   };
-  
-
 
   const handleTabChange = (event, newIndex) => {
     setTabIndex(newIndex);
@@ -148,9 +168,7 @@ export default function EmployeeTable() {
         <Box display="flex" alignItems="center">
           <Avatar alt={params.value} src={params.row.avatar} sx={{ width: 30, height: 30, mr: 1, mt: 0.5 }} />
           <Typography fontWeight="bold">{params.value}</Typography>
-          
         </Box>
-        
       ),
     },
     { field: "title", headerName: "Title", flex: 2 },
@@ -165,13 +183,6 @@ export default function EmployeeTable() {
         </Typography>
       ),
     },
-
-
-    
-    { field: "birthday", headerName: "Birthday", flex: 1 },
-    
-   
-
     {
       field: "status",
       headerName: "Status",
@@ -201,114 +212,133 @@ export default function EmployeeTable() {
     },
   ];
 
+  const userColumns = [
+    { field: "id", headerName: "ID", flex: 1 },
+    { field: "name", headerName: "Name", flex: 2 },
+    { field: "username", headerName: "Username", flex: 2 },
+    { field: "password", headerName: "Password", flex: 2 },
+  ];
+
   return (
+    <Box maxWidth="xl" sx={{ mx: "10%" }}>
+      <Container maxWidth="xl" disableGutters>
+        <Typography
+          variant="h3"
+          align="center"
+          gutterBottom
+          sx={{
+            fontWeight: "bold",
+            borderBottom: "4px solid #2c2f48",
+            color: '#2c2f48',
+            p: 6,
+          }}
+        >
+          <PeopleIcon sx={{ mr: 1,fontSize: 40 }} />
+          Employees
+        </Typography>
 
-          <Box
-          maxWidth="xl"
-          sx={{ mx: "10%" }}
-      >
-    <Container maxWidth="xl" disableGutters>
-      <Typography
-        variant="h3"
-        align="center"
-        gutterBottom
-        sx={{
-          fontWeight: "bold",
-          borderBottom: "4px solid #2c2f48",
-          color: '#2c2f48',
-          p: 6,
-        }}
-      >
-        <PeopleIcon sx={{ mr: 1,fontSize: 40 }} />
-        Employees
-      </Typography>
+        <Tabs value={tabIndex} onChange={handleTabChange} centered>
+          <Tab label="Table View" />
+          <Tab label="Card View" />
+        </Tabs>
 
-      <Tabs value={tabIndex} onChange={handleTabChange} centered>
-        <Tab label="Table View" />
-        <Tab label="Card View" />
-      </Tabs>
+        {tabIndex === 0 && (
+          <Paper sx={{ padding: 2, borderRadius: 2, mt: 3 }}>
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 2, mb: 5 }}>
+              <Button
+                startIcon={<AddIcon />}
+                variant="contained"
+                size="large"
+                sx={{ borderRadius: 5, p:2, fontWeight: 'bold', fontSize: '1.2rem', color: 'white', backgroundColor: '#5188a7' }}
+                onClick={() => handleEmp({ action: "add" })}
+              >
+                Add Employee
+              </Button>
+            </Box>
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              getRowId={(row) => row._id} 
+              pageSizeOptions={[5, 10]}
+              disableColumnMenu
+              autoHeight
+              sx={{
+                "& .MuiDataGrid-cell": {
+                  display: "flex",
+                  alignItems: "center",
+                },
+                "& .MuiDataGrid-columnHeaders": { backgroundColor: "#333", color: "#000", fontWeight: "bold" },
+                "& .MuiDataGrid-row:hover": { backgroundColor: "#f5f5f5" },
+              }}
+            />
 
-      {tabIndex === 0 && (
-        <Paper sx={{ padding: 2, borderRadius: 2, mt: 3 }}>
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 2, mb: 5 }}>
-            <Button
-              startIcon={<AddIcon />}
-              variant="contained"
-              size="large"
-                    
-              sx={{ borderRadius: 5, p:2, fontWeight: 'bold', fontSize: '1.2rem', color: 'white', backgroundColor: '#5188a7' }}
-              onClick={() => handleEmp({ action: "add" })}
+            <Typography
+              variant="h5"
+              align="center"
+              sx={{ mt: 6, mb: 2, fontWeight: "bold", color: "#2c2f48" }}
             >
-              Add Employee
-            </Button>
+              User Accounts
+            </Typography>
+
+            <DataGrid
+              rows={users}
+              columns={userColumns}
+              getRowId={(row) => row.id}
+              pageSizeOptions={[5, 10]}
+              disableColumnMenu
+              autoHeight
+              sx={{
+                "& .MuiDataGrid-columnHeaders": { backgroundColor: "#e0e0e0", fontWeight: "bold" },
+              }}
+            />
+          </Paper>
+        )}
+
+        {tabIndex === 1 && (
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mt: 3 }}>
+            {rows.map((emp) => (
+              <Card key={emp._id} sx={{ width: 250, padding: 2 }}>
+                <CardContent>
+                  <Avatar src={emp.avatar} sx={{ width: 50, height: 50, mb: 2 }} />
+                  <Typography variant="h6">{emp.name}</Typography>
+                  <Typography variant="body2" color="textSecondary">Title: {emp.title}</Typography>
+                  <Typography variant="body2" color="textSecondary">Email: {emp.email}</Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Salary: {formatCurrency(emp.salary)}
+                  </Typography>
+                  <Chip
+                    label={emp.status ? "Active" : "Inactive"}
+                    color={emp.status ? "success" : "error"}
+                    sx={{ mt: 1 }}
+                  />
+                </CardContent>
+                <CardActions>
+                  <IconButton color="primary" onClick={() => handleEmp({ action: "edit", employee: emp })}>
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton onClick={() => handleDelete(emp._id)}>
+                    <DeleteIcon sx={{ color: "#F44336" }} />
+                  </IconButton>
+                </CardActions>
+              </Card>
+            ))}
           </Box>
-          
-          
-        
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            getRowId={(row) => row._id} 
-            pageSizeOptions={[5, 10]}
-            disableColumnMenu
-            autoHeight
-            sx={{
-              "& .MuiDataGrid-cell": {
-                display: "flex",
-                alignItems: "center",
-              },
-              "& .MuiDataGrid-columnHeaders": { backgroundColor: "#333", color: "#000", fontWeight: "bold" },
-              "& .MuiDataGrid-row:hover": { backgroundColor: "#f5f5f5" },
-            }}
-          />
-        </Paper>
-      )}
+        )}
 
-      {tabIndex === 1 && (
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mt: 3 }}>
-          {rows.map((emp) => (
-            <Card key={emp._id} sx={{ width: 250, padding: 2 }}>
-              <CardContent>
-                <Avatar src={emp.avatar} sx={{ width: 50, height: 50, mb: 2 }} />
-                <Typography variant="h6">{emp.name}</Typography>
-                <Typography variant="body2" color="textSecondary">Title: {emp.title}</Typography>
-                <Typography variant="body2" color="textSecondary">Email: {emp.email}</Typography>
-                <Typography variant="body2" color="textSecondary">
-                              Salary: {formatCurrency(emp.salary)}
-                </Typography>
-                  <Typography variant="body2" color="textSecondary" sx={{mb:2}}>Birthday: {emp.birthday}</Typography>
-                <Chip
-                  label={emp.status ? "Active" : "Inactive"}
-                  color={emp.status ? "success" : "error"}
-                />
-              </CardContent>
-              <CardActions>
-                <IconButton color="primary" onClick={() => handleEmp({ action: "edit", employee: emp })}>
-                  <EditIcon />
-                </IconButton>
-                <IconButton onClick={() => handleDelete(emp._id)}>
-                  <DeleteIcon sx={{ color: "#F44336" }} />
-                </IconButton>
-              </CardActions>
-            </Card>
-          ))}
-        </Box>
-      )}
-
-      <EmpDialog
-        open={openDialog}
-        setOpen={setOpenDialog}
-        emp={employee}
-        setemp={setEmp}
-        action={action}
-        rows={rows}
-        setRows={setRows}
-        handleSave={handleSave}
-        setAlert={setAlert}
-        setOpenAlert={setOpenAlert}
-      />
-      <Alerts open={openAlert} setOpen={setOpenAlert} alert={alert} setAlert={setAlert} />
-    </Container>
-  </Box>
+        <EmpDialog
+          open={openDialog}
+          setOpen={setOpenDialog}
+          emp={employee}
+          setemp={setEmp}
+          action={action}
+          rows={rows}
+          setRows={setRows}
+          handleSave={handleSave}
+          setAlert={setAlert}
+          setOpenAlert={setOpenAlert}
+        />
+        <Alerts open={openAlert} setOpen={setOpenAlert} alert={alert} setAlert={setAlert} />
+      </Container>
+    </Box>
   );
 }
