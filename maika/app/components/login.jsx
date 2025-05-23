@@ -1,58 +1,57 @@
 "use client";
 
-import { useState } from "react";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import Modal from "@mui/material/Modal";
-import Alert from "@mui/material/Alert";
-import Snackbar from "@mui/material/Snackbar";
-import CircularProgress from "@mui/material/CircularProgress";
+import React, { useEffect, useState } from "react";
+import {
+  Button,
+  TextField,
+  Box,
+  Typography,
+  Container,
+  Modal,
+  Alert,
+  Snackbar,
+  CircularProgress,
+} from "@mui/material";
 import axios from "axios";
 
-// La URL base para la API
-const API_BASE_URL = 'http://localhost:5000/api/v1';
+const API_BASE_URL = "http://localhost:5000/api/v1";
 
-export default function SignIn({ open, onClose, onSignUpClick }) {
+const SignIn = ({ open, onClose }) => {
   const [error, setError] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const parsed = JSON.parse(storedUser);
+        setUser(parsed.username || parsed.name || "User");
+      } catch (e) {
+        console.warn("Invalid user data in localStorage");
+      }
+    }
+  }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
-    
+
     const data = new FormData(event.currentTarget);
-    const username = data.get("email"); // Mantenemos el nombre del campo como "email" para la UI
+    const username = data.get("email");
     const password = data.get("password");
-    
+
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/login`, {
-        username,
-        password
-      }, {
-        withCredentials: true // Importante para recibir/enviar cookies
-      });
-      
-      // Si llegamos aquí, el login fue exitoso
-      console.log("Login successful:", response.data);
-      
-      // Guardar datos del usuario en localStorage para referencia
-      localStorage.setItem('user', JSON.stringify(response.data));
-      
-      // Cerrar el modal
+      const response = await axios.post(
+        `${API_BASE_URL}/users/login`,
+        { username, password },
+        { withCredentials: true }
+      );
+
+      localStorage.setItem("user", JSON.stringify(response.data));
+      setUser(response.data.username || response.data.name);
       if (onClose) onClose();
-      
-      // Recargar la página o redirigir según el tipo de usuario
-      // Esto depende de tu implementación específica
-      window.location.reload();
-      
     } catch (error) {
       console.error("Login error:", error);
       setError(error.response?.data?.error || "Invalid username or password");
@@ -61,10 +60,34 @@ export default function SignIn({ open, onClose, onSignUpClick }) {
       setIsLoading(false);
     }
   };
-  
+
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+    if (onClose) onClose();
+  };
+
+  if (user) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          p: 2,
+        }}
+      >
+        <Typography variant="h6">Welcome, {user}</Typography>
+        <Button variant="outlined" color="error" onClick={handleLogout}>
+          Logout
+        </Button>
+      </Box>
+    );
+  }
 
   return (
     <Modal
@@ -75,16 +98,16 @@ export default function SignIn({ open, onClose, onSignUpClick }) {
     >
       <Box
         sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          bgcolor: 'background.paper',
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          bgcolor: "background.paper",
           boxShadow: 24,
           p: 4,
           borderRadius: 2,
           maxWidth: 500,
-          width: '100%',
+          width: "100%",
         }}
       >
         <Container component="main" maxWidth="xs">
@@ -98,7 +121,12 @@ export default function SignIn({ open, onClose, onSignUpClick }) {
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
-            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+            <Box
+              component="form"
+              onSubmit={handleSubmit}
+              noValidate
+              sx={{ mt: 1 }}
+            >
               <TextField
                 margin="normal"
                 required
@@ -134,40 +162,20 @@ export default function SignIn({ open, onClose, onSignUpClick }) {
                   "Sign In"
                 )}
               </Button>
-              <Grid container>
-                <Grid item xs>
-                  <Link href="#" variant="body2">
-                    Forgot password?
-                  </Link>
-                </Grid>
-                <Grid item>
-                  <Link 
-                    href="#" 
-                    variant="body2" 
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (onClose) onClose();
-                      if (onSignUpClick) onSignUpClick();
-                    }}
-                  >
-                    {"Don't have an account? Sign Up"}
-                  </Link>
-                </Grid>
-              </Grid>
             </Box>
           </Box>
         </Container>
-        
-        <Snackbar 
-          open={openSnackbar} 
-          autoHideDuration={6000} 
+
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={6000}
           onClose={handleCloseSnackbar}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
-          <Alert 
-            onClose={handleCloseSnackbar} 
-            severity="error" 
-            sx={{ width: '100%' }}
+          <Alert
+            onClose={handleCloseSnackbar}
+            severity="error"
+            sx={{ width: "100%" }}
           >
             {error}
           </Alert>
@@ -175,4 +183,6 @@ export default function SignIn({ open, onClose, onSignUpClick }) {
       </Box>
     </Modal>
   );
-}
+};
+
+export default SignIn;

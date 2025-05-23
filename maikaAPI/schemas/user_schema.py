@@ -1,143 +1,40 @@
 from marshmallow import Schema, fields, validate, ValidationError, post_load
 from logger.logger_base import Logger
 
-class UserRegistrationSchema(Schema):
-    username = fields.Str(
-        required=True,
-        validate=[
-            validate.Length(min=3, max=50),
-            validate.Regexp(r'^[a-zA-Z0-9_]+$', error='Username can only contain letters, numbers, and underscores')
-        ]
-    )
-    password = fields.Str(
-        required=True,
-        validate=validate.Length(min=6, max=100)
-    )
-    name = fields.Str(
-        required=True,
-        validate=validate.Length(min=2, max=100)
-    )
-    userType = fields.Str(
-        required=True,
-        validate=validate.OneOf(['admin', 'service', 'kitchen'])
-    )
 
-    @post_load
-    def clean_data(self, data, **kwargs):
-        # Clean and format data
-        data['username'] = data['username'].lower().strip()
-        data['name'] = data['name'].strip()
-        return data
-
-class UserLoginSchema(Schema):
-    username = fields.Str(
-        required=True,
-        validate=validate.Length(min=1, max=50)
-    )
-    password = fields.Str(
-        required=True,
-        validate=validate.Length(min=1, max=100)
-    )
-
-    @post_load
-    def clean_data(self, data, **kwargs):
-        data['username'] = data['username'].lower().strip()
-        return data
-
-class UserUpdateSchema(Schema):
-    name = fields.Str(
-        validate=validate.Length(min=2, max=100),
-        missing=None
-    )
-    userType = fields.Str(
-        validate=validate.OneOf(['admin', 'service', 'kitchen']),
-        missing=None
-    )
-
-    @post_load
-    def clean_data(self, data, **kwargs):
-        # Remove None values
-        cleaned_data = {k: v for k, v in data.items() if v is not None}
-        # Clean string values
-        if 'name' in cleaned_data:
-            cleaned_data['name'] = cleaned_data['name'].strip()
-        return cleaned_data
-
-class UserResponseSchema(Schema):
-    id = fields.Str()
-    username = fields.Str()
-    name = fields.Str()
-    userType = fields.Str()
-    created_at = fields.DateTime()
-    updated_at = fields.DateTime()
-
-class AuthResponseSchema(Schema):
-    success = fields.Bool()
-    message = fields.Str()
-    user = fields.Nested(UserResponseSchema)
-    token = fields.Str()
-    error = fields.Str()
 
 class UserSchema:
-    def __init__(self):
-        self.logger = Logger()
-        self.registration_schema = UserRegistrationSchema()
-        self.login_schema = UserLoginSchema()
-        self.update_schema = UserUpdateSchema()
-        self.response_schema = UserResponseSchema()
-        self.auth_response_schema = AuthResponseSchema()
+    def validate_username(self, username):
+        if not username or not isinstance(username, str):
+            raise ValidationError("Username must be a non-empty string")
+        if len(username) < 3 or len(username) > 50:
+            raise ValidationError("Username must be between 3 and 50 characters")
+        if not username.isalnum() and "_" not in username:
+            raise ValidationError("Username can only contain letters, numbers, and underscores")
+
+    def validate_password(self, password):
+        if not password or not isinstance(password, str):
+            raise ValidationError("Password must be a non-empty string")
+        if len(password) < 6 or len(password) > 100:
+            raise ValidationError("Password must be between 6 and 100 characters")
+
+    def validate_name(self, name):
+        if not name or not isinstance(name, str):
+            raise ValidationError("Name must be a non-empty string")
+        if len(name) < 2 or len(name) > 100:
+            raise ValidationError("Name must be between 2 and 100 characters")
+
+    def validate_user_type(self, user_type):
+        valid_types = ['admin', 'service', 'kitchen']
+        if not user_type or not isinstance(user_type, str):
+            raise ValidationError("User type must be a non-empty string")
+        if user_type not in valid_types:
+            raise ValidationError(f"User type must be one of: {', '.join(valid_types)}")
 
     def validate_registration_data(self, data):
-        """Validate user registration data"""
-        try:
-            self.logger.info('Validating user registration data')
-            validated_data = self.registration_schema.load(data)
-            self.logger.info('User registration data validation successful')
-            return validated_data
-        except ValidationError as e:
-            self.logger.warning(f'User registration validation failed: {e.messages}')
-            return {'errors': e.messages}
-
-    def validate_login_data(self, data):
-        """Validate user login data"""
-        try:
-            self.logger.info('Validating user login data')
-            validated_data = self.login_schema.load(data)
-            self.logger.info('User login data validation successful')
-            return validated_data
-        except ValidationError as e:
-            self.logger.warning(f'User login validation failed: {e.messages}')
-            return {'errors': e.messages}
-
-    def validate_update_data(self, data):
-        """Validate user update data"""
-        try:
-            self.logger.info('Validating user update data')
-            validated_data = self.update_schema.load(data)
-            self.logger.info('User update data validation successful')
-            return validated_data
-        except ValidationError as e:
-            self.logger.warning(f'User update validation failed: {e.messages}')
-            return {'errors': e.messages}
-
-    def serialize_user(self, user):
-        """Serialize user data for response"""
-        try:
-            if user:
-                serialized = self.response_schema.dump(user)
-                self.logger.info('User data serialization successful')
-                return serialized
-            return None
-        except Exception as e:
-            self.logger.error(f'Error serializing user data: {e}')
-            return None
-
-    def serialize_auth_response(self, response_data):
-        """Serialize authentication response"""
-        try:
-            serialized = self.auth_response_schema.dump(response_data)
-            self.logger.info('Auth response serialization successful')
-            return serialized
-        except Exception as e:
-            self.logger.error(f'Error serializing auth response: {e}')
-            return response_data
+        """Valida todo el conjunto de datos de registro"""
+        self.validate_username(data.get('username'))
+        self.validate_password(data.get('password'))
+        self.validate_name(data.get('name'))
+        self.validate_user_type(data.get('userType'))
+        return data
