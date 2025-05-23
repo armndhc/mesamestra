@@ -10,12 +10,14 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import PeopleIcon from '@mui/icons-material/People';
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
-// Importamos el componente LoginModal
-import SignIn from "./login"; // Ajusta la ruta según donde lo hayas creado
+import { useState, useEffect } from "react";
+import SignIn from './login';
+import SignUp from './signup';
+
 
 export default function AppbarGlobal() {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  
 
   const navItems = [
     { label: "Home", href: "/", icon: <HomeIcon /> },
@@ -37,29 +39,49 @@ export default function AppbarGlobal() {
     image: null
   });
 
-  const [openDialog, setOpenDialog] = useState(false);
-
-  const handleLogin = ({ action }) => {
-    // Update action.
-    setAction(action);
+  const [openLoginModal, setOpenLoginModal] = useState(false);
+  const [openSignUpModal, setOpenSignUpModal] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+ // Check authentication on mount
+  useEffect(() => {
+    checkAuth();
+  }, []);
   
-    // Open dialog.
-    setOpenDialog(true);
-  
-    // Select action.
-    if (action === "login") {
-        setMenu({
-            _id: null,
-            meal: "",
-            description: "",
-            price: 0,
-            image: null
-        });
-    } 
-    else {
-        console.warn("Unknown action:", action);
+  const checkAuth = () => {
+    // Revisar si hay un usuario en localStorage
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+        localStorage.removeItem('user');
+        setIsLoggedIn(false);
+        setUser(null);
+      }
     }
   };
+
+  const handleLogout = async () => {
+    try {
+      await axios.post(`${API_BASE_URL}/auth/logout`, {}, {
+        withCredentials: true
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      // Independientemente de la respuesta del servidor, limpiar localStorage
+      localStorage.removeItem('user');
+      setIsLoggedIn(false);
+      setUser(null);
+    }
+  };
+  
+  
+  
+ 
 
   // Función para cerrar el modal de login
   const handleCloseDialog = () => {
@@ -85,29 +107,65 @@ export default function AppbarGlobal() {
             <Box component="span" sx={{ color: '#87c3df' }}>Maestra</Box>
           </Typography>
         </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mt: 2 }}>
+        {isLoggedIn ? (
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="body1" sx={{ mr: 2 }}>
+              {user?.name || user?.username || 'User'}
+            </Typography>
+            <Button 
+              variant="outlined" 
+              color="#5188a7" 
+              startIcon={<LogoutIcon />}
+              onClick={handleLogout}
+            >
+              Logout
+            </Button>
+          </Box>
+        ) : (
+          <Box>
+            <Button 
+              variant="outlined" 
+              color="primary" 
+              
+              sx={{ mr: 1, fontWeight: 'bold', color: 'white', backgroundColor: '#5188a7' }}
+              onClick={() => setOpenLoginModal(true)}
+            >
+              Login
+            </Button>
+            <Button 
+              variant="contained" 
+              color="primary"
+              sx={{ mr: 1, fontWeight: 'bold', color: 'white', backgroundColor: '#2b6687' }}
+              onClick={() => setOpenSignUpModal(true)}
+            >
+              Sign Up
+            </Button>
+          </Box>
+        )}
 
-        <Button 
-          onClick={() => handleLogin({ action: "login" })} 
-          variant="contained" 
-          sx={{
-            backgroundColor: "#5188a7",
-            color: "#white",
-            "&:hover": {
-                backgroundColor: "#white",
-                color: "#white",
-                transform: "scale(1.2)",
-                transition: "transform 0.3s ease-in-out",
-            },
-          }}
-        >
-          Log in
-        </Button>
+         {/* Login Modal */}
+      <SignIn 
+        open={openLoginModal} 
+        onClose={() => {
+          setOpenLoginModal(false);
+          checkAuth(); // Verificar autenticación después de cerrar
+        }}
+        onSignUpClick={() => {
+          setOpenSignUpModal(true);
+        }}
+      />
+      
+      {/* SignUp Modal */}
+      <SignUp 
+        open={openSignUpModal} 
+        onClose={() => {
+          setOpenSignUpModal(false);
+          setOpenLoginModal(true); // Abrir login después de registro
+        }}
+      />
+      </Box>
         
-        {/* Usamos el componente LoginModal importado */}
-        <SignIn 
-          open={openDialog} 
-          onClose={handleCloseDialog} 
-        />
           
         </Toolbar>
       </AppBar>

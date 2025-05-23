@@ -18,6 +18,9 @@ import {
 import Grid from "@mui/material/Grid2";
 import Image from "next/image";
 
+
+
+
 // Home page.
 export default function Home() {
   // Theme.
@@ -101,7 +104,7 @@ export default function Home() {
                   textAlign: "center",
                   borderRadius: 15,
                   "&:hover": {
-                    backgroundColor: "#5188a7",
+                    backgroundColor: "#c95475",
                     transform: "scale(1.05)",
                     transition: "transform 0.4s ease-in-out",
                     boxShadow: "0 10px 20px rgba(0, 0, 0, 0.2)",

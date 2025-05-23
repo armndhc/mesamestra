@@ -3,14 +3,13 @@
 import { useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Modal from "@mui/material/Modal";
+import MenuItem from "@mui/material/MenuItem";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -19,44 +18,55 @@ import axios from "axios";
 // La URL base para la API
 const API_BASE_URL = 'http://localhost:5000/api/v1';
 
-export default function SignIn({ open, onClose, onSignUpClick }) {
+export default function SignUp({ open, onClose }) {
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+    name: "",
+    userType: "service"
+  });
+  
   const [error, setError] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
     
-    const data = new FormData(event.currentTarget);
-    const username = data.get("email"); // Mantenemos el nombre del campo como "email" para la UI
-    const password = data.get("password");
-    
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/login`, {
-        username,
-        password
-      }, {
-        withCredentials: true // Importante para recibir/enviar cookies
+      const response = await axios.post(`${API_BASE_URL}/auth/register`, formData);
+      
+      setSuccess(true);
+      setOpenSnackbar(true);
+      
+      // Limpiar el formulario
+      setFormData({
+        username: "",
+        password: "",
+        name: "",
+        userType: "service"
       });
       
-      // Si llegamos aquí, el login fue exitoso
-      console.log("Login successful:", response.data);
-      
-      // Guardar datos del usuario en localStorage para referencia
-      localStorage.setItem('user', JSON.stringify(response.data));
-      
-      // Cerrar el modal
-      if (onClose) onClose();
-      
-      // Recargar la página o redirigir según el tipo de usuario
-      // Esto depende de tu implementación específica
-      window.location.reload();
+      // Cerrar el modal después de 2 segundos
+      setTimeout(() => {
+        if (onClose) onClose();
+      }, 2000);
       
     } catch (error) {
-      console.error("Login error:", error);
-      setError(error.response?.data?.error || "Invalid username or password");
+      console.error("Registration error:", error);
+      setError(error.response?.data?.error || "Error registering user");
       setOpenSnackbar(true);
+      setSuccess(false);
     } finally {
       setIsLoading(false);
     }
@@ -70,8 +80,8 @@ export default function SignIn({ open, onClose, onSignUpClick }) {
     <Modal
       open={open}
       onClose={onClose}
-      aria-labelledby="sign-in-modal"
-      aria-describedby="sign-in-form-modal"
+      aria-labelledby="sign-up-modal"
+      aria-describedby="sign-up-form-modal"
     >
       <Box
         sx={{
@@ -96,18 +106,32 @@ export default function SignIn({ open, onClose, onSignUpClick }) {
             }}
           >
             <Typography component="h1" variant="h5">
-              Sign in
+              Sign Up
             </Typography>
             <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
               <TextField
                 margin="normal"
                 required
                 fullWidth
-                id="email"
-                label="Username"
-                name="email"
-                autoComplete="username"
+                id="name"
+                label="Full Name"
+                name="name"
+                autoComplete="name"
                 autoFocus
+                value={formData.name}
+                onChange={handleChange}
+                disabled={isLoading}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="username"
+                label="Username"
+                name="username"
+                autoComplete="username"
+                value={formData.username}
+                onChange={handleChange}
                 disabled={isLoading}
               />
               <TextField
@@ -119,8 +143,26 @@ export default function SignIn({ open, onClose, onSignUpClick }) {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                value={formData.password}
+                onChange={handleChange}
                 disabled={isLoading}
               />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                select
+                id="userType"
+                label="User Type"
+                name="userType"
+                value={formData.userType}
+                onChange={handleChange}
+                disabled={isLoading}
+              >
+                <MenuItem value="admin">Admin</MenuItem>
+                <MenuItem value="service">Service</MenuItem>
+                <MenuItem value="kitchen">Kitchen</MenuItem>
+              </TextField>
               <Button
                 type="submit"
                 fullWidth
@@ -131,26 +173,16 @@ export default function SignIn({ open, onClose, onSignUpClick }) {
                 {isLoading ? (
                   <CircularProgress size={24} color="inherit" />
                 ) : (
-                  "Sign In"
+                  "Sign Up"
                 )}
               </Button>
               <Grid container>
-                <Grid item xs>
-                  <Link href="#" variant="body2">
-                    Forgot password?
-                  </Link>
-                </Grid>
                 <Grid item>
-                  <Link 
-                    href="#" 
-                    variant="body2" 
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (onClose) onClose();
-                      if (onSignUpClick) onSignUpClick();
-                    }}
-                  >
-                    {"Don't have an account? Sign Up"}
+                  <Link href="#" variant="body2" onClick={() => {
+                    if (onClose) onClose();
+                    // Aquí podrías abrir el modal de login
+                  }}>
+                    {"Already have an account? Sign In"}
                   </Link>
                 </Grid>
               </Grid>
@@ -166,10 +198,10 @@ export default function SignIn({ open, onClose, onSignUpClick }) {
         >
           <Alert 
             onClose={handleCloseSnackbar} 
-            severity="error" 
+            severity={success ? "success" : "error"}
             sx={{ width: '100%' }}
           >
-            {error}
+            {success ? "Registration successful!" : error}
           </Alert>
         </Snackbar>
       </Box>
