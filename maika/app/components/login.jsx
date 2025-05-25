@@ -1,3 +1,4 @@
+// SignIn.jsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -20,24 +21,10 @@ const SignIn = ({ open, onClose }) => {
   const [error, setError] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const parsed = JSON.parse(storedUser);
-        setUser(parsed.username || parsed.name || "User");
-      } catch (e) {
-        console.warn("Invalid user data in localStorage");
-      }
-    }
-  }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
-
     const data = new FormData(event.currentTarget);
     const username = data.get("email");
     const password = data.get("password");
@@ -50,8 +37,8 @@ const SignIn = ({ open, onClose }) => {
       );
 
       localStorage.setItem("user", JSON.stringify(response.data));
-      setUser(response.data.username || response.data.name);
       if (onClose) onClose();
+      window.location.href = "/";
     } catch (error) {
       console.error("Login error:", error);
       setError(error.response?.data?.error || "Invalid username or password");
@@ -60,34 +47,6 @@ const SignIn = ({ open, onClose }) => {
       setIsLoading(false);
     }
   };
-
-  const handleCloseSnackbar = () => {
-    setOpenSnackbar(false);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    setUser(null);
-    if (onClose) onClose();
-  };
-
-  if (user) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          p: 2,
-        }}
-      >
-        <Typography variant="h6">Welcome, {user}</Typography>
-        <Button variant="outlined" color="error" onClick={handleLogout}>
-          Logout
-        </Button>
-      </Box>
-    );
-  }
 
   return (
     <Modal
@@ -111,22 +70,11 @@ const SignIn = ({ open, onClose }) => {
         }}
       >
         <Container component="main" maxWidth="xs">
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
+          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
-            <Box
-              component="form"
-              onSubmit={handleSubmit}
-              noValidate
-              sx={{ mt: 1 }}
-            >
+            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
               <TextField
                 margin="normal"
                 required
@@ -156,27 +104,18 @@ const SignIn = ({ open, onClose }) => {
                 sx={{ mt: 3, mb: 2, backgroundColor: "#5188a7" }}
                 disabled={isLoading}
               >
-                {isLoading ? (
-                  <CircularProgress size={24} color="inherit" />
-                ) : (
-                  "Sign In"
-                )}
+                {isLoading ? <CircularProgress size={24} color="inherit" /> : "Sign In"}
               </Button>
             </Box>
           </Box>
         </Container>
-
         <Snackbar
           open={openSnackbar}
           autoHideDuration={6000}
-          onClose={handleCloseSnackbar}
+          onClose={() => setOpenSnackbar(false)}
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
-          <Alert
-            onClose={handleCloseSnackbar}
-            severity="error"
-            sx={{ width: "100%" }}
-          >
+          <Alert onClose={() => setOpenSnackbar(false)} severity="error" sx={{ width: "100%" }}>
             {error}
           </Alert>
         </Snackbar>

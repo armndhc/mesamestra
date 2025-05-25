@@ -77,8 +77,17 @@ export default function AppbarGlobal() {
       localStorage.removeItem("user");
       setIsLoggedIn(false);
       setUser(null);
+      window.location.href = "/"; 
     }
   };
+
+  const allowedItems = navItems.filter((item) => {
+    if (!user) return false;
+    if (user.userType === 'admin') return true;
+    if (user.userType === 'service') return ["Home", "Menu", "Reservations", "Orders"].includes(item.label);
+    if (user.userType === 'kitchen') return ["Menu", "Inventory", "Orders"].includes(item.label);
+    return false;
+  });
 
   return (
     <>
@@ -136,7 +145,7 @@ export default function AppbarGlobal() {
               open={openLoginModal}
               onClose={() => {
                 setOpenLoginModal(false);
-                checkAuth(); // Refrescar estado de autenticación
+                checkAuth();
               }}
             />
           </Box>
@@ -158,7 +167,7 @@ export default function AppbarGlobal() {
           </Box>
 
           <List>
-            {navItems.map((item) => (
+            {allowedItems.map((item) => (
               <ListItem key={item.label} disablePadding>
                 <ListItemButton component={Link} href={item.href}>
                   <Box sx={{ display: "flex", alignItems: "center" }}>
