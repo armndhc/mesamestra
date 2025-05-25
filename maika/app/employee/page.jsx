@@ -74,8 +74,10 @@ export default function EmployeeTable() {
         id: index + 1,
         name: user.name,
         username: user.username,
-        password: user.password
+        password: user.password,
+        userType: user.userType, 
       }));
+      
       setUsers(mappedUsers);
     } catch (error) {
       setAlert({
@@ -105,37 +107,30 @@ export default function EmployeeTable() {
       if (action === "add") {
         const response = await axios.post("http://127.0.0.1:5000/api/v1/staff", newEmployee);
         setRows((prevRows) => [...prevRows, response.data]);
-        setAlert({
-          message: "Employee added successfully",
-          severity: "success",
-        });
+        await fetchUsers();  
+        setAlert({ message: "Employee added successfully", severity: "success" });
       } else if (action === "edit") {
         const response = await axios.put(`http://127.0.0.1:5000/api/v1/staff/${newEmployee._id}`, newEmployee);
         setRows((prevRows) =>
           prevRows.map((row) =>
-            row._id === newEmployee._id
-              ? { ...response.data, id: response.data._id }
-              : row
+            row._id === newEmployee._id ? { ...response.data, id: response.data._id } : row
           )
         );
-        setAlert({
-          message: "Employee updated successfully",
-          severity: "success",
-        });
+        await fetchUsers();  
+        setAlert({ message: "Employee updated successfully", severity: "success" });
       }
     } catch (error) {
-      setAlert({
-        message: "Failed to save employee",
-        severity: "error",
-      });
+      setAlert({ message: "Failed to save employee", severity: "error" });
     }
     setOpenDialog(false);
     setOpenAlert(true);
   };
+  
 
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://127.0.0.1:5000/api/v1/staff/${id}`);
+      //await axios.delete(`http://127.0.0.1:5000/api/v1/users/${id}`);
       setRows(rows.filter((row) => row._id !== id));
       setAlert({
         message: "Employee deleted successfully",
@@ -217,7 +212,9 @@ export default function EmployeeTable() {
     { field: "name", headerName: "Name", flex: 2 },
     { field: "username", headerName: "Username", flex: 2 },
     { field: "password", headerName: "Password", flex: 2 },
+    { field: "userType", headerName: "Type", flex: 1 }, 
   ];
+  
 
   return (
     <Box maxWidth="xl" sx={{ mx: "10%" }}>

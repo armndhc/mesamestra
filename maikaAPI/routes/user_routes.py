@@ -13,14 +13,18 @@ class UserRoutes(Blueprint):
     def register_routes(self):
         self.route('/api/v1/users', methods=['GET'])(self.get_all_users)
         self.route('/api/v1/users', methods=['POST'])(self.create_user)
-        self.route('/api/v1/users/<string:username>', methods=['PUT'])(self.update_user)
-        self.route('/api/v1/users/<string:username>', methods=['DELETE'])(self.delete_user)
+        self.route('/api/v1/users/<string:user_id>', methods=['PUT'])(self.update_user)
+        self.route('/api/v1/users/<string:user_id>', methods=['DELETE'])(self.delete_user)
         self.route('/api/v1/users/login', methods=['POST'])(self.login_user)
         self.route('/api/v1/users/logout', methods=['POST'])(self.logout_user)
 
     def get_all_users(self):
-        users = self.user_service.get_all_users()
-        return jsonify(users), 200
+        try:
+            users = self.user_service.get_all_users()
+            return jsonify(users), 200
+        except Exception as e:
+            self.logger.error(f"Error getting users: {e}")
+            return jsonify({"error": "Internal server error"}), 500
 
     def create_user(self):
         try:
@@ -34,16 +38,12 @@ class UserRoutes(Blueprint):
             self.logger.error(f"Error creating user: {e}")
             return jsonify({"error": "Internal server error"}), 500
 
-    def update_user(self, username):
+    def update_user(self, user_id):
         try:
             data = request.get_json()
-            if 'name' in data:
-                self.user_schema.validate_name(data['name'])
-            if 'userType' in data:
-                self.user_schema.validate_user_type(data['userType'])
-            updated = self.user_service.update_user(username, data)
-            if updated:
-                return jsonify(updated), 200
+            updated_user = self.user_service.update_user(user_id, data)
+            if updated_user:
+                return jsonify(updated_user), 200
             else:
                 return jsonify({'error': 'User not found'}), 404
         except ValidationError as e:
@@ -52,9 +52,9 @@ class UserRoutes(Blueprint):
             self.logger.error(f"Error updating user: {e}")
             return jsonify({"error": "Internal server error"}), 500
 
-    def delete_user(self, username):
+    def delete_user(self, user_id):
         try:
-            deleted = self.user_service.delete_user(username)
+            deleted = self.user_service.delete_user(user_id)
             if deleted:
                 return jsonify({"message": "User deleted"}), 200
             else:
