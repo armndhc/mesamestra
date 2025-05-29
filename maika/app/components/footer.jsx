@@ -1,6 +1,6 @@
 import { Box, Container, Link, Typography, TextField, Button, IconButton, MenuItem, Select } from '@mui/material';
 import { Facebook, Twitter, YouTube } from '@mui/icons-material';
-import Grid from "@mui/material/Grid2"
+import Grid from "@mui/material/Grid2";
 import Image from 'next/image';
 
 export default function Footer() {
@@ -52,20 +52,21 @@ export default function Footer() {
                     <Typography variant="h7" display="block" color="textSecondary">contact@mesamaestra.com</Typography>
                 </Grid>
 
-                <Grid xs={12} ml='auto'>
+                <Grid xs={12} ml="auto">
                     <Typography variant="subtitle1" gutterBottom>
-                        Subscribe to our site
+                        Send us a message
                     </Typography>
                     <Typography variant="body2" color="textSecondary" gutterBottom>
-                        For new meals and some promotions
+                        Ask us anything or share feedback
                     </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', }}>
-                        {/*In this text field, we can capture the client's email.*/}
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <TextField
                             variant="outlined"
-                            placeholder="Input your email"
+                            placeholder="Write your message..."
                             size="small"
                             sx={{ mr: 1, flexGrow: 1 }}
+                            multiline
+                            maxRows={4}
                         />
                         <Button 
                             variant="contained"
@@ -73,14 +74,14 @@ export default function Footer() {
                                 backgroundColor: '#2c2f48',
                                 color: 'white',
                                 "&:hover": {
-                                backgroundColor: '#5188a7',
-                                color: 'white',
-                                transform: "scale(1.2)",
-                                transition: "transform 0.3s ease-in-out",
+                                    backgroundColor: '#5188a7',
+                                    color: 'white',
+                                    transform: "scale(1.2)",
+                                    transition: "transform 0.3s ease-in-out",
                                 },
                             }}
-                            >
-                            Subscribe
+                        >
+                            Send
                         </Button>
                     </Box>
                 </Grid>
@@ -94,10 +95,9 @@ export default function Footer() {
                 <Typography variant="body2" color="textSecondary">
                     © 2025 MesaMestra, Inc. • <Link href="#">Privacy</Link> • <Link href="#">Terms</Link> • <Link href="#">Sitemap</Link>
                 </Typography>
-                {/*Here we have the icons for our social media*/}
                 <Box>
                     <IconButton
-                        href="#"
+                        href="https://twitter.com"
                         color="inherit"
                         sx={{
                             "&:hover": {
@@ -111,7 +111,7 @@ export default function Footer() {
                         <Twitter />
                     </IconButton>
                     <IconButton
-                        href="#"
+                        href="https://facebook.com"
                         color="inherit"
                         sx={{
                             "&:hover": {
@@ -125,7 +125,7 @@ export default function Footer() {
                         <Facebook />
                     </IconButton>
                     <IconButton
-                        href="#"
+                        href="https://youtube.com"
                         color="inherit"
                         sx={{
                             "&:hover": {

@@ -88,50 +88,123 @@ export default function EmployeeTable() {
     }
   };
 
-  const handleEmp = ({ action, employee }) => {
-    try {
-      setAction(action);
-      setOpenDialog(true);
-      setEmp(action === "add" ? { ...employee, _id: null, status: true } : employee);
-    } catch (error) {
-      setAlert({
-        message: "Failed to open employee dialog",
-        severity: "error",
-      });
-      setOpenAlert(true);
-    }
-  };
+  // Reemplaza la función handleEmp existente con esta versión modificada:
 
-  const handleSave = async (newEmployee) => {
-    try {
-      if (action === "add") {
-        const response = await axios.post("http://127.0.0.1:5000/api/v1/staff", newEmployee);
-        setRows((prevRows) => [...prevRows, response.data]);
-        await fetchUsers();  
-        setAlert({ message: "Employee added successfully", severity: "success" });
-      } else if (action === "edit") {
-        const response = await axios.put(`http://127.0.0.1:5000/api/v1/staff/${newEmployee._id}`, newEmployee);
-        setRows((prevRows) =>
-          prevRows.map((row) =>
-            row._id === newEmployee._id ? { ...response.data, id: response.data._id } : row
-          )
-        );
-        await fetchUsers();  
-        setAlert({ message: "Employee updated successfully", severity: "success" });
+const handleEmp = async ({ action, employee }) => {
+  try {
+    setAction(action);
+    setOpenDialog(true);
+    
+    if (action === "add") {
+      setEmp({ ...employee, _id: null, status: true });
+    } else if (action === "edit") {
+      // Buscar los datos del usuario correspondiente en la tabla users
+      try {
+        const userResponse = await axios.get("http://127.0.0.1:5000/api/v1/users");
+        const userData = userResponse.data.find(user => user.name === employee.name);
+        
+        // Combinar datos del empleado (staff) con datos del usuario (users)
+        const completeEmployeeData = {
+          ...employee,
+          username: userData?.username || "",
+          password: userData?.password || "",
+          userType: userData?.userType || ""
+        };
+        
+        setEmp(completeEmployeeData);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        // Si falla la búsqueda de usuario, usar solo los datos del empleado
+        setEmp(employee);
+        setAlert({
+          message: "Warning: Could not load user data",
+          severity: "warning",
+        });
+        setOpenAlert(true);
       }
-    } catch (error) {
-      setAlert({ message: "Failed to save employee", severity: "error" });
     }
-    setOpenDialog(false);
+  } catch (error) {
+    setAlert({
+      message: "Failed to open employee dialog",
+      severity: "error",
+    });
     setOpenAlert(true);
-  };
+  }
+};
+
+ // Reemplaza la función handleSave existente con esta versión modificada:
+
+const handleSave = async (newEmployee) => {
+  try {
+    if (action === "add") {
+      const response = await axios.post("http://127.0.0.1:5000/api/v1/staff", newEmployee);
+      setRows((prevRows) => [...prevRows, response.data]);
+      await fetchUsers();  
+      setAlert({ message: "Employee added successfully", severity: "success" });
+    } else if (action === "edit") {
+      // 1. Actualizar datos en la tabla staff
+      const response = await axios.put(`http://127.0.0.1:5000/api/v1/staff/${newEmployee._id}`, newEmployee);
+      
+      setRows((prevRows) =>
+        prevRows.map((row) =>
+          row._id === newEmployee._id ? { ...response.data, id: response.data._id } : row
+        )
+      );
+
+      try {
+        const usersResponse = await axios.get("http://127.0.0.1:5000/api/v1/users");
+        const existingUser = usersResponse.data.find(user => user.name === newEmployee.name);
+        
+        if (existingUser) {
+          const userUpdateData = {
+            username: newEmployee.username,
+            password: newEmployee.password,
+            userType: newEmployee.userType,
+            name: newEmployee.name
+          };
+          
+          await axios.put(`http://127.0.0.1:5000/api/v1/users/${existingUser._id}`, userUpdateData);
+        } else {
+          const userPayload = {
+            username: newEmployee.username,
+            password: newEmployee.password,
+            userType: newEmployee.userType,
+            name: newEmployee.name
+          };
+          
+          await axios.post("http://127.0.0.1:5000/api/v1/users", userPayload);
+        }
+      } catch (userError) {
+        console.error("Error updating user data:", userError);
+        setAlert({ 
+          message: "Employee updated but user data may not be synchronized", 
+          severity: "warning" 
+        });
+        setOpenDialog(false);
+        setOpenAlert(true);
+        return;
+      }
+
+      await fetchUsers();  
+      setAlert({ message: "Employee updated successfully", severity: "success" });
+    }
+  } catch (error) {
+    setAlert({ message: "Failed to save employee", severity: "error" });
+  }
+  setOpenDialog(false);
+  setOpenAlert(true);
+};
   
+
 
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://127.0.0.1:5000/api/v1/staff/${id}`);
-      //await axios.delete(`http://127.0.0.1:5000/api/v1/users/${id}`);
+      await axios.delete(`http://127.0.0.1:5000/api/v1/users/${id}`);
+      
       setRows(rows.filter((row) => row._id !== id));
+      await fetchUsers();  
+  
       setAlert({
         message: "Employee deleted successfully",
         severity: "success",
@@ -144,6 +217,7 @@ export default function EmployeeTable() {
     }
     setOpenAlert(true);
   };
+  
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);

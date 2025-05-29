@@ -27,47 +27,44 @@ class UserService:
             self.logger.error(f'Error creating the user: {e}')
             return jsonify({'error': str(e)}), 500
 
-    def get_user_by_username(self, username):
+    def get_user_by_id(self, user_id):
         try:
-            user = self.db_conn.db.users.find_one({'username': username})
-            return user
+            return self.db_conn.db.users.find_one({'_id': int(user_id)})
         except Exception as e:
-            self.logger.error(f'Error fetching user {username}: {e}')
+            self.logger.error(f'Error fetching user by ID {user_id}: {e}')
             return None
 
-    def update_user(self, username, updates):
+    def update_user(self, user_id, updates):
         try:
-            existing_user = self.get_user_by_username(username)
-            if existing_user:
-                result = self.db_conn.db.users.update_one({'username': username}, {'$set': updates})
-                if result.modified_count > 0:
-                    self.logger.info(f'User {username} updated successfully.')
-                return self.get_user_by_username(username)
+            user = self.get_user_by_id(user_id)
+            if user:
+                self.db_conn.db.users.update_one({'_id': int(user_id)}, {'$set': updates})
+                self.logger.info(f'User with ID {user_id} updated successfully.')
+                return self.get_user_by_id(user_id)
             else:
-                self.logger.warning(f'User {username} not found for update.')
+                self.logger.warning(f'User ID {user_id} not found for update.')
                 return None
         except Exception as e:
-            self.logger.error(f'Error updating user {username}: {e}')
+            self.logger.error(f'Error updating user ID {user_id}: {e}')
             return jsonify({'error': str(e)}), 500
 
-    def delete_user(self, username):
+    def delete_user(self, user_id):
         try:
-            user = self.get_user_by_username(username)
-            if user:
-                self.db_conn.db.users.delete_one({'username': username})
-                self.logger.info(f'User {username} deleted successfully.')
-                return user
+            result = self.db_conn.db.users.delete_one({'_id': int(user_id)})
+            if result.deleted_count > 0:
+                self.logger.info(f'User ID {user_id} deleted successfully.')
+                return True
             else:
-                self.logger.warning(f'User {username} not found for deletion.')
-                return None
+                self.logger.warning(f'User ID {user_id} not found for deletion.')
+                return False
         except Exception as e:
-            self.logger.error(f'Error deleting user {username}: {e}')
-            return jsonify({'error': str(e)}), 500
+            self.logger.error(f'Error deleting user ID {user_id}: {e}')
+            return False
 
     def authenticate_user(self, username, password):
         try:
             user = self.db_conn.db.users.find_one({"username": username})
-            if user and user["password"] == password:  # ⚠️ Usa bcrypt en producción
+            if user and user["password"] == password:
                 self.logger.info(f"User {username} authenticated successfully.")
                 return {
                     "username": user["username"],
